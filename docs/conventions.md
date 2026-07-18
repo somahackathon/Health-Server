@@ -74,6 +74,7 @@ global/validation
 - BMI is calculated by the server from height and weight and must not be accepted as a client measurement.
 - PAPS evaluation requires RN to send `schoolLevel` and `schoolGrade` for official grade-level criteria lookup.
 - `schoolGrade` must be 1 to 6 for `ELEMENTARY` and 1 to 3 for `MIDDLE` or `HIGH`.
+- BMI uses official categories in `paps_bmi_standard`; it is not mapped to the general 1 to 5 grade scale.
 - PAPS evaluation returns item-level grades and completeness; do not add an overall grade without an approved aggregation policy.
 
 ## Tests

@@ -9,17 +9,23 @@ public record PapsMeasurementResultResponse(
         String testItemName,
         BigDecimal value,
         String unit,
-        Integer grade
+        Integer grade,
+        String bmiCategory
 ) {
 
     public static PapsMeasurementResultResponse from(FitnessTestItem item, BigDecimal value, Integer grade) {
+        return from(item, value, grade, null);
+    }
+
+    public static PapsMeasurementResultResponse from(FitnessTestItem item, BigDecimal value, Integer grade, String bmiCategory) {
         return new PapsMeasurementResultResponse(
                 item.getComponent().getCode().name(),
                 item.getCode().name(),
                 item.getName(),
                 value,
                 item.getUnit().name(),
-                grade
+                grade,
+                bmiCategory
         );
     }
 }

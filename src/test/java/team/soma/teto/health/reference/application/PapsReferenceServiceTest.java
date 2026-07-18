@@ -75,8 +75,7 @@ class PapsReferenceServiceTest {
                         "PUSH_UP",
                         "SPRINT_50M",
                         "STANDING_LONG_JUMP",
-                        "BMI",
-                        "BODY_FAT_PERCENTAGE"
+                        "BMI"
                 );
     }
 
@@ -93,15 +92,15 @@ class PapsReferenceServiceTest {
     void getCurrentActiveStandardVersion() {
         assertThat(getCurrentPapsStandardVersionService.getCurrentVersion())
                 .satisfies(version -> {
-                    assertThat(version.code()).isEqualTo("HACKATHON_V1");
-                    assertThat(version.sourceType()).isEqualTo("INTERNAL");
-                    assertThat(version.official()).isFalse();
+                    assertThat(version.code()).isEqualTo("PAPS_OFFICIAL_2025_V1");
+                    assertThat(version.sourceType()).isEqualTo("OFFICIAL");
+                    assertThat(version.official()).isTrue();
                 });
     }
 
     @Test
     void throwWhenActiveStandardVersionDoesNotExist() {
-        papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow().deactivate();
+        papsStandardVersionRepository.findAllByActiveTrue().forEach(PapsStandardVersion::deactivate);
 
         assertThatThrownBy(() -> getCurrentPapsStandardVersionService.getCurrentVersion())
                 .isInstanceOf(BusinessException.class)

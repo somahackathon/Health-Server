@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.soma.teto.health.evaluation.domain.AgeCalculator;
+import team.soma.teto.health.evaluation.domain.BmiCategoryEvaluator;
 import team.soma.teto.health.evaluation.domain.BmiCalculator;
 import team.soma.teto.health.evaluation.domain.MeasurementValueValidator;
 import team.soma.teto.health.evaluation.domain.PapsEvaluationErrorCode;
@@ -27,10 +28,13 @@ import team.soma.teto.health.evaluation.presentation.PapsMeasurementRequest;
 import team.soma.teto.health.evaluation.presentation.PapsStandardVersionSummary;
 import team.soma.teto.health.global.error.BusinessException;
 import team.soma.teto.health.reference.component.domain.FitnessComponentCode;
+import team.soma.teto.health.reference.standard.domain.BmiCategory;
+import team.soma.teto.health.reference.standard.domain.PapsBmiStandard;
 import team.soma.teto.health.reference.standard.domain.PapsStandard;
 import team.soma.teto.health.reference.standard.domain.PapsStandardVersion;
 import team.soma.teto.health.reference.standard.domain.PapsStandardVersionErrorCode;
 import team.soma.teto.health.reference.standard.domain.SchoolLevel;
+import team.soma.teto.health.reference.standard.repository.PapsBmiStandardRepository;
 import team.soma.teto.health.reference.standard.repository.PapsStandardRepository;
 import team.soma.teto.health.reference.standard.repository.PapsStandardVersionRepository;
 import team.soma.teto.health.reference.testitem.domain.FitnessTestItem;
@@ -52,9 +56,11 @@ public class EvaluatePapsService {
     private final FitnessTestItemRepository fitnessTestItemRepository;
     private final PapsStandardVersionRepository papsStandardVersionRepository;
     private final PapsStandardRepository papsStandardRepository;
+    private final PapsBmiStandardRepository papsBmiStandardRepository;
     private final Clock clock;
     private final AgeCalculator ageCalculator = new AgeCalculator();
     private final BmiCalculator bmiCalculator = new BmiCalculator();
+    private final BmiCategoryEvaluator bmiCategoryEvaluator = new BmiCategoryEvaluator();
     private final MeasurementValueValidator measurementValueValidator = new MeasurementValueValidator();
     private final PapsGradeEvaluator papsGradeEvaluator = new PapsGradeEvaluator();
 
@@ -62,11 +68,13 @@ public class EvaluatePapsService {
             FitnessTestItemRepository fitnessTestItemRepository,
             PapsStandardVersionRepository papsStandardVersionRepository,
             PapsStandardRepository papsStandardRepository,
+            PapsBmiStandardRepository papsBmiStandardRepository,
             Clock clock
     ) {
         this.fitnessTestItemRepository = fitnessTestItemRepository;
         this.papsStandardVersionRepository = papsStandardVersionRepository;
         this.papsStandardRepository = papsStandardRepository;
+        this.papsBmiStandardRepository = papsBmiStandardRepository;
         this.clock = clock;
     }
 
@@ -88,13 +96,22 @@ public class EvaluatePapsService {
 
         Map<FitnessTestItem, List<PapsStandard>> standardsByTestItem = getStandardsByTestItem(
                 standardVersion,
-                measurementValues.stream().map(PapsMeasurementValue::testItem).toList(),
+                measurementValues.stream()
+                        .map(PapsMeasurementValue::testItem)
+                        .filter(item -> item.getCode() != FitnessTestItemCode.BMI)
+                        .toList(),
                 schoolLevel,
                 request.gender(),
                 request.schoolGrade()
         );
+        List<PapsBmiStandard> bmiStandards = papsBmiStandardRepository.findCandidateStandards(
+                standardVersion,
+                schoolLevel,
+                request.schoolGrade(),
+                request.gender()
+        );
         List<PapsMeasurementResultResponse> measurementResults = measurementValues.stream()
-                .map(measurement -> toMeasurementResult(measurement, standardsByTestItem))
+                .map(measurement -> toMeasurementResult(measurement, standardsByTestItem, bmiStandards))
                 .toList();
 
         PapsEvaluationCompletenessResponse completeness = createCompleteness(measurementResults);
@@ -219,6 +236,9 @@ public class EvaluatePapsService {
             team.soma.teto.health.reference.standard.domain.Gender gender,
             int schoolGrade
     ) {
+        if (testItems.isEmpty()) {
+            return Map.of();
+        }
         return papsStandardRepository.findCandidateStandards(standardVersion, testItems, schoolLevel, schoolGrade, gender)
                 .stream()
                 .collect(Collectors.groupingBy(PapsStandard::getTestItem));
@@ -226,8 +246,13 @@ public class EvaluatePapsService {
 
     private PapsMeasurementResultResponse toMeasurementResult(
             PapsMeasurementValue measurement,
-            Map<FitnessTestItem, List<PapsStandard>> standardsByTestItem
+            Map<FitnessTestItem, List<PapsStandard>> standardsByTestItem,
+            List<PapsBmiStandard> bmiStandards
     ) {
+        if (measurement.testItem().getCode() == FitnessTestItemCode.BMI) {
+            BmiCategory category = bmiCategoryEvaluator.evaluate(measurement.value(), bmiStandards);
+            return PapsMeasurementResultResponse.from(measurement.testItem(), measurement.value(), null, category.name());
+        }
         int grade = papsGradeEvaluator.evaluate(
                 measurement.value(),
                 standardsByTestItem.getOrDefault(measurement.testItem(), List.of())

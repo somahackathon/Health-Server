@@ -56,7 +56,7 @@ class PapsReferenceControllerTest {
         mockMvc.perform(get("/api/v1/paps/test-items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.testItems", hasSize(12)))
+                .andExpect(jsonPath("$.data.testItems", hasSize(11)))
                 .andExpect(jsonPath("$.data.testItems[0].componentCode").value("CARDIO_ENDURANCE"))
                 .andExpect(jsonPath("$.data.testItems[0].unit").value("SECOND"))
                 .andExpect(jsonPath("$.data.testItems[0].valueType").value("DECIMAL"));
@@ -107,14 +107,14 @@ class PapsReferenceControllerTest {
         mockMvc.perform(get("/api/v1/paps/standards/current"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.code").value("HACKATHON_V1"))
-                .andExpect(jsonPath("$.data.sourceType").value("INTERNAL"))
-                .andExpect(jsonPath("$.data.official").value(false));
+                .andExpect(jsonPath("$.data.code").value("PAPS_OFFICIAL_2025_V1"))
+                .andExpect(jsonPath("$.data.sourceType").value("OFFICIAL"))
+                .andExpect(jsonPath("$.data.official").value(true));
     }
 
     @Test
     void returnErrorWhenCurrentStandardVersionDoesNotExist() throws Exception {
-        papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow().deactivate();
+        papsStandardVersionRepository.findAllByActiveTrue().forEach(PapsStandardVersion::deactivate);
 
         mockMvc.perform(get("/api/v1/paps/standards/current"))
                 .andExpect(status().isNotFound())
