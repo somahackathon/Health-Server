@@ -69,6 +69,10 @@ global/validation
 - `PapsStandardVersion` distinguishes internal and official standard sources.
 - `PapsStandard` stores versioned grade ranges only after the standard values are confirmed.
 - `AiAnalysisJob` stores asynchronous AI job state and temporary request/result payloads until expiration.
+- PAPS evaluation requests and results are request-scoped only and are not persisted.
+- BMI is calculated by the server from height and weight and must not be accepted as a client measurement.
+- PAPS evaluation currently uses `HIGH` as the MVP school-level policy until an explicit contract is confirmed.
+- PAPS evaluation returns item-level grades and completeness; do not add an overall grade without an approved aggregation policy.
 
 ## Tests
 

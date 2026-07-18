@@ -9,6 +9,8 @@ This document tracks the expected JSON boundary between the Spring server and AI
 
 ## Fitness Analysis Request
 
+The PAPS evaluation API response is the current stable input candidate for future fitness AI requests. The AI team should expect item-level grades, standard version metadata, calculated BMI, and completeness fields from the Spring server. Evaluation results are fitness-management reference information, not medical diagnosis.
+
 ```json
 {
   "correlationId": "TODO",
@@ -119,6 +121,8 @@ The Spring server and AI server must not persist raw videos beyond the analysis 
 - Final AI endpoint paths and HTTP methods.
 - Fitness and posture model version format.
 - Gender and PAPS item code enums.
+- Whether fitness AI requires all five PAPS components or can accept partial evaluation results.
+- Final mapping from PAPS evaluation response fields to the AI fitness request payload.
 - Request and response field validation ranges.
 - Synchronous versus asynchronous posture analysis.
 - Timeout values and retry count.

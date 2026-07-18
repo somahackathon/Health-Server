@@ -13,6 +13,8 @@ public interface FitnessTestItemRepository extends JpaRepository<FitnessTestItem
 
     Optional<FitnessTestItem> findByCode(FitnessTestItemCode code);
 
+    List<FitnessTestItem> findAllByCodeIn(List<FitnessTestItemCode> codes);
+
     @Query("""
             select item
             from FitnessTestItem item

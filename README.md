@@ -9,7 +9,16 @@ The RN app can query active PAPS reference metadata from the server:
 - `GET /api/v1/paps/test-items?component={componentCode}`: active test items for one fitness component.
 - `GET /api/v1/paps/standards/current`: the currently active standard version.
 
-`official=false` means the active standard version is an internal temporary standard, not an official PAPS source. PAPS evaluation, grade calculation, and score calculation APIs are not implemented yet.
+`official=false` means the active standard version is an internal temporary standard, not an official PAPS source.
+
+## PAPS Evaluation API
+
+- `POST /api/v1/paps/evaluations`: validates profile and measurement inputs, calculates age from `assessmentDate`, calculates BMI on the server, and returns item-level grades using the active standard version.
+- Evaluation requests and results are not persisted in MariaDB. The RN app stores returned results in local SQLite.
+- The current MVP uses `HIGH` as the school level policy until a product-level school-level contract is confirmed.
+- The client must not send `BMI`; the server calculates BMI from height and weight and evaluates it through the `BMI` test item.
+- Only one measurement item is allowed per fitness component in a single request.
+- Overall grade is not calculated because no official or team-approved aggregation policy is confirmed.
 
 AI 기반 PAPS 체력 관리 서비스의 Spring Boot 백엔드 서버입니다.
 
