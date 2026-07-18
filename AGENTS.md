@@ -45,13 +45,13 @@ team.soma.teto.health
 │   ├── application
 │   ├── domain
 │   └── infrastructure
-├── analysis
+├── ai
+│   ├── client
+│   ├── dto
+│   ├── error
 │   ├── fitness
 │   ├── posture
 │   └── job
-├── ai
-│   ├── client
-│   └── dto
 ├── file
 └── global
     ├── config

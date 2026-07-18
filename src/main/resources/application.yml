@@ -20,12 +20,29 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 26MB
 
 springdoc:
   api-docs:
     enabled: ${OPENAPI_ENABLED:false}
   swagger-ui:
     enabled: ${OPENAPI_ENABLED:false}
+
+ai:
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    base-url: https://generativelanguage.googleapis.com
+    model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
+    connect-timeout: 5s
+    read-timeout: 90s
+  pose:
+    base-url: ${POSE_SERVER_URL:http://localhost:8000}
+    connect-timeout: 5s
+    read-timeout: 60s
+    max-video-size: 20MB
 
 app:
   time:
