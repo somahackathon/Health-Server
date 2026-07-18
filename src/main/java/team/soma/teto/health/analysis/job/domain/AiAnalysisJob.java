@@ -150,6 +150,14 @@ public class AiAnalysisJob extends BaseTimeEntity {
         retryCount++;
     }
 
+    public void clearExpiredPayloads(Instant now) {
+        if (now == null || expiresAt.isAfter(now)) {
+            throw new IllegalStateException("cannot clear payloads before expiration");
+        }
+        requestPayload = null;
+        resultPayload = null;
+    }
+
     public Long getId() {
         return id;
     }
