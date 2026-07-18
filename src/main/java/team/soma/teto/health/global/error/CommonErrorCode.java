@@ -9,6 +9,7 @@ public enum CommonErrorCode implements ErrorCode {
     NOT_FOUND("COMMON_NOT_FOUND", "요청한 리소스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     METHOD_NOT_ALLOWED("COMMON_METHOD_NOT_ALLOWED", "지원하지 않는 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
     UNSUPPORTED_MEDIA_TYPE("COMMON_UNSUPPORTED_MEDIA_TYPE", "지원하지 않는 미디어 타입입니다.", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+    PAYLOAD_TOO_LARGE("COMMON_PAYLOAD_TOO_LARGE", "요청 크기가 허용 범위를 초과했습니다.", HttpStatus.PAYLOAD_TOO_LARGE),
     INTERNAL_ERROR("COMMON_INTERNAL_ERROR", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
