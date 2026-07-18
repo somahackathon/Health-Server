@@ -72,4 +72,24 @@ class AiAnalysisJobTest {
         assertThatThrownBy(() -> job.fail(AiFailureCode.UNKNOWN, "failed\n\tat internal.Class", now.plusSeconds(1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void clearPayloadsAfterExpiration() {
+        AiAnalysisJob job = AiAnalysisJob.create("hash", AnalysisType.FITNESS, "{\"request\":true}", now.minusSeconds(1));
+        job.start(now.minusSeconds(60));
+        job.complete("{\"result\":true}", "fitness-v1", now.minusSeconds(30));
+
+        job.clearExpiredPayloads(now);
+
+        assertThat(job.getRequestPayload()).isNull();
+        assertThat(job.getResultPayload()).isNull();
+    }
+
+    @Test
+    void rejectClearingPayloadsBeforeExpiration() {
+        AiAnalysisJob job = AiAnalysisJob.create("hash", AnalysisType.FITNESS, "{\"request\":true}", now.plusSeconds(3600));
+
+        assertThatThrownBy(() -> job.clearExpiredPayloads(now))
+                .isInstanceOf(IllegalStateException.class);
+    }
 }
