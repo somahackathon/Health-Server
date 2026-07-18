@@ -39,6 +39,9 @@ global/validation
 - Entities are not returned directly from controllers.
 - Services contain application behavior; controllers coordinate HTTP only.
 - Repositories stay behind application or infrastructure boundaries.
+- Persistent entities are limited to PAPS reference data and temporary AI job data. Do not add user account, body profile, PAPS history, exercise solution, or long-term posture feedback entities without a new product decision.
+- All `ManyToOne` associations use `FetchType.LAZY` unless a measured use case requires otherwise.
+- Flyway migrations are the schema source of truth; production must not rely on `ddl-auto=create` or `ddl-auto=update`.
 
 ## Exception Handling
 
@@ -59,6 +62,13 @@ global/validation
 - Use uppercase enum constants.
 - Persist stable enum names only after confirming migration impact.
 - Avoid encoding user-facing Korean labels directly in enum constants.
+
+## Persistence
+
+- `FitnessComponent` and `FitnessTestItem` store supported PAPS reference items.
+- `PapsStandardVersion` distinguishes internal and official standard sources.
+- `PapsStandard` stores versioned grade ranges only after the standard values are confirmed.
+- `AiAnalysisJob` stores asynchronous AI job state and temporary request/result payloads until expiration.
 
 ## Tests
 

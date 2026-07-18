@@ -83,13 +83,15 @@ Actual transport for video bytes is TODO. Options include multipart upload from 
 
 Initial status candidates:
 
-- `REQUESTED`
+- `PENDING`
 - `PROCESSING`
 - `COMPLETED`
 - `FAILED`
-- `CANCELED`
+- `EXPIRED`
 
 TODO: Confirm whether posture analysis is synchronous, asynchronous, or hybrid.
+
+The Spring server stores `AiAnalysisJob` rows for temporary status/result lookup. Request and result payloads are not long-term user history and must be deleted after expiration.
 
 ## Common Error Format
 
