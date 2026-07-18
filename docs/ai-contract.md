@@ -98,7 +98,7 @@ Transport:
 
 Parts:
 
-- `exerciseType`: text, for example `PUSH_UP` or `CURL_UP`
+- `exerciseType`: text, one of `PUSH_UP`, `SQUAT`, `LUNGE`, `PLANK`
 - `video`: binary video file
 
 Spring-generated multipart filenames are safe placeholders. Original client filenames are not forwarded.
@@ -114,6 +114,13 @@ The included `ai-python` FastAPI service endpoint is `/pose/extract`. It extract
   "metrics": {}
 }
 ```
+
+Per-exercise `metrics` shape (all computed by `ai-python`, pure computer vision, no LLM involved):
+
+- `PUSH_UP`: `{repCount, reps: [{startSec, endSec, minElbowAngleDeg, maxHipSagDeg, neckAlignedRatio}], bodyLineDeviationSeries: [{sec, deg}]}`
+- `SQUAT`: `{repCount, reps: [{startSec, endSec, minKneeAngleDeg, maxTrunkLeanDeg}]}`
+- `LUNGE`: `{repCount, reps: [{startSec, endSec, minFrontKneeAngleDeg, maxTrunkLeanDeg}]}`
+- `PLANK` (a held posture, not reps): `{holdSec, maxHipSagDeg, maxHipPikeDeg, bodyLineDeviationSeries: [{sec, deg}]}`
 
 Response:
 
@@ -132,7 +139,7 @@ Response:
 }
 ```
 
-TODO: AI team should confirm exercise type enums, final posture feedback codes, and whether posture analysis remains synchronous.
+TODO: AI team should confirm final posture feedback codes and whether posture analysis remains synchronous.
 
 ## Job Status
 

@@ -34,3 +34,19 @@ def line_deviation_deg(a: Sequence[float], b: Sequence[float], c: Sequence[float
 
 def euclidean_distance(a: Sequence[float], b: Sequence[float]) -> float:
     return math.hypot(a[0] - b[0], a[1] - b[1])
+
+
+def vertical_deviation_deg(vertex: Sequence[float], point: Sequence[float]) -> float:
+    """Angle between the vertex->point vector and straight "up", in degrees.
+
+    0 means point is directly above vertex (e.g. shoulder directly above hip —
+    a perfectly upright torso); 90 means point is level with vertex (fully
+    horizontal lean). Assumes normalized image coordinates where y increases
+    downward, so "up" is the (0, -1) direction.
+    """
+    vx, vy = point[0] - vertex[0], point[1] - vertex[1]
+    mag = math.hypot(vx, vy)
+    if mag == 0:
+        return 0.0
+    cos_theta = max(-1.0, min(1.0, -vy / mag))
+    return math.degrees(math.acos(cos_theta))

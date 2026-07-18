@@ -13,13 +13,19 @@ import tempfile
 
 from fastapi import FastAPI, Form, HTTPException, UploadFile
 
-from pose import curlup, pushup
+from pose import lunge, plank, pushup, squat
 from pose.extractor import NoPersonDetectedError, VideoDecodeError, extract_frames
 
 app = FastAPI(title="ai-python pose extraction server")
 
 SAMPLE_FPS = 10
-SUPPORTED_EXERCISE_TYPES = {"PUSH_UP", "CURL_UP"}
+METRIC_COMPUTERS = {
+    "PUSH_UP": pushup.compute_metrics,
+    "SQUAT": squat.compute_metrics,
+    "LUNGE": lunge.compute_metrics,
+    "PLANK": plank.compute_metrics,
+}
+SUPPORTED_EXERCISE_TYPES = set(METRIC_COMPUTERS)
 
 
 @app.get("/health")
@@ -42,10 +48,7 @@ async def extract(video: UploadFile, exerciseType: str = Form(...)):
 
         frames, duration_sec = extract_frames(tmp_path, sample_fps=SAMPLE_FPS)
 
-        if exercise_type == "PUSH_UP":
-            metrics = pushup.compute_metrics(frames)
-        else:
-            metrics = curlup.compute_metrics(frames)
+        metrics = METRIC_COMPUTERS[exercise_type](frames)
 
         return {
             "exerciseType": exercise_type,

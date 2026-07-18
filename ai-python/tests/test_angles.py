@@ -17,7 +17,7 @@ from pose.landmarks import (
     RIGHT_SHOULDER,
     RIGHT_WRIST,
 )
-from pose import curlup, pushup
+from pose import lunge, plank, pushup, squat
 
 
 def lm(x, y, visibility=1.0):
@@ -115,28 +115,20 @@ def test_pushup_hip_sag_detected():
     assert metrics["reps"][0]["maxHipSagDeg"] >= 20.0
 
 
-def _curlup_frame(sec, knee_angle_deg, trunk_lift_deg, neck_pull_deg=0.0):
-    """Build a synthetic curl-up frame with a controlled knee angle, trunk lift, and neck-pull deviation.
+def _leg_trunk_frame(sec, knee_angle_deg, trunk_lean_deg=0.0):
+    """Build a synthetic standing-exercise frame (squat/lunge) with a controlled
+    knee angle and trunk lean, using the same landmarks for both legs.
 
-    Knee/hip/ankle are placed so angle_deg(hip, knee, ankle) == knee_angle_deg.
-    Shoulder/hip/knee are placed so (180 - angle_deg(shoulder, hip, knee)) == trunk_lift_deg.
-    Ear/shoulder/hip are placed so line_deviation_deg(ear, shoulder, hip) == neck_pull_deg.
+    Hip/knee/ankle are placed so angle_deg(hip, knee, ankle) == knee_angle_deg.
+    Shoulder/hip are placed so vertical_deviation_deg(hip, shoulder) == trunk_lean_deg.
     """
     knee = (0.0, 0.0)
     theta = math.radians(knee_angle_deg)
     ankle = (math.sin(theta), -math.cos(theta))
 
     hip = (0.0, -1.0)
-    phi = math.radians(180.0 - trunk_lift_deg)
-    shoulder = (hip[0] + math.sin(phi), hip[1] + math.cos(phi))
-
-    w0 = (math.sin(phi), math.cos(phi))  # opposite of the hip->shoulder direction
-    delta = math.radians(neck_pull_deg)
-    w = (
-        w0[0] * math.cos(delta) - w0[1] * math.sin(delta),
-        w0[0] * math.sin(delta) + w0[1] * math.cos(delta),
-    )
-    ear = (shoulder[0] + w[0], shoulder[1] + w[1])
+    lean_theta = math.radians(trunk_lean_deg)
+    shoulder = (hip[0] + math.sin(lean_theta), hip[1] - math.cos(lean_theta))
 
     return Frame(
         sec=sec,
@@ -145,35 +137,74 @@ def _curlup_frame(sec, knee_angle_deg, trunk_lift_deg, neck_pull_deg=0.0):
             LEFT_HIP: lm(*hip), RIGHT_HIP: lm(*hip),
             LEFT_KNEE: lm(*knee), RIGHT_KNEE: lm(*knee),
             LEFT_ANKLE: lm(*ankle), RIGHT_ANKLE: lm(*ankle),
-            LEFT_EAR: lm(*ear),
         },
     )
 
 
-def test_curlup_rep_segmentation_counts_up_phases():
+def test_squat_rep_segmentation_counts_down_phases():
     frames = [
-        _curlup_frame(0.0, 90.0, 5.0),
-        _curlup_frame(0.2, 90.0, 15.0),
-        _curlup_frame(0.4, 90.0, 45.0),   # up phase 1
-        _curlup_frame(0.6, 90.0, 50.0),   # up phase 1
-        _curlup_frame(0.8, 90.0, 15.0),
-        _curlup_frame(1.0, 90.0, 5.0),
-        _curlup_frame(1.2, 90.0, 5.0),
-        _curlup_frame(1.4, 90.0, 15.0),
-        _curlup_frame(1.6, 90.0, 45.0),   # up phase 2
-        _curlup_frame(1.8, 90.0, 5.0),
+        _leg_trunk_frame(0.0, 175.0),
+        _leg_trunk_frame(0.2, 150.0),
+        _leg_trunk_frame(0.4, 95.0),   # down phase 1
+        _leg_trunk_frame(0.6, 100.0),  # down phase 1
+        _leg_trunk_frame(0.8, 150.0),
+        _leg_trunk_frame(1.0, 175.0),
+        _leg_trunk_frame(1.2, 175.0),
+        _leg_trunk_frame(1.4, 150.0),
+        _leg_trunk_frame(1.6, 90.0),    # down phase 2
+        _leg_trunk_frame(1.8, 175.0),
     ]
-    metrics = curlup.compute_metrics(frames)
+    metrics = squat.compute_metrics(frames)
     assert metrics["repCount"] == 2
-    assert metrics["reps"][0]["maxTrunkLiftDeg"] >= 45.0
-    assert metrics["reps"][1]["maxTrunkLiftDeg"] >= 45.0
+    assert metrics["reps"][0]["minKneeAngleDeg"] <= 100.0
+    assert metrics["reps"][1]["minKneeAngleDeg"] <= 95.0
 
 
-def test_curlup_neck_pull_and_knee_angle_instability_detected():
+def test_squat_trunk_lean_detected():
     frames = [
-        _curlup_frame(0.0, 90.0, 5.0, neck_pull_deg=0.0),
-        _curlup_frame(0.2, 170.0, 45.0, neck_pull_deg=25.0),  # knee straightened + neck pulled, up phase
+        _leg_trunk_frame(0.0, 175.0, trunk_lean_deg=0.0),
+        _leg_trunk_frame(0.2, 95.0, trunk_lean_deg=35.0),
     ]
-    metrics = curlup.compute_metrics(frames)
-    assert metrics["reps"][0]["maxNeckPullDeg"] >= 20.0
-    assert metrics["kneeAngleStableRatio"] < 1.0
+    metrics = squat.compute_metrics(frames)
+    assert metrics["reps"][0]["maxTrunkLeanDeg"] >= 30.0
+
+
+def test_lunge_rep_segmentation_and_depth():
+    frames = [
+        _leg_trunk_frame(0.0, 175.0),
+        _leg_trunk_frame(0.2, 150.0),
+        _leg_trunk_frame(0.4, 90.0),   # down phase
+        _leg_trunk_frame(0.6, 175.0),
+    ]
+    metrics = lunge.compute_metrics(frames)
+    assert metrics["repCount"] == 1
+    assert metrics["reps"][0]["minFrontKneeAngleDeg"] <= 90.0
+
+
+def _plank_frame(sec, hip_offset):
+    shoulder = (0.0, 0.0)
+    ankle = (2.0, 0.0)
+    hip = (1.0, hip_offset)
+    return Frame(
+        sec=sec,
+        landmarks={
+            LEFT_SHOULDER: lm(*shoulder), RIGHT_SHOULDER: lm(*shoulder),
+            LEFT_HIP: lm(*hip), RIGHT_HIP: lm(*hip),
+            LEFT_ANKLE: lm(*ankle), RIGHT_ANKLE: lm(*ankle),
+        },
+    )
+
+
+def test_plank_detects_hip_sag():
+    frames = [_plank_frame(0.0, 0.0), _plank_frame(0.5, 0.4), _plank_frame(1.0, 0.0)]
+    metrics = plank.compute_metrics(frames)
+    assert metrics["maxHipSagDeg"] > 10.0
+    assert metrics["maxHipPikeDeg"] == 0.0
+    assert metrics["holdSec"] == 1.0
+
+
+def test_plank_detects_hip_pike():
+    frames = [_plank_frame(0.0, 0.0), _plank_frame(0.5, -0.4), _plank_frame(1.0, 0.0)]
+    metrics = plank.compute_metrics(frames)
+    assert metrics["maxHipPikeDeg"] > 10.0
+    assert metrics["maxHipSagDeg"] == 0.0

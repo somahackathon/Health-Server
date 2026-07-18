@@ -45,7 +45,7 @@ Content-Type: `multipart/form-data`
 Parts:
 
 - `video`: mp4 or mov video file
-- `exerciseType`: `PUSH_UP` or `CURL_UP`
+- `exerciseType`: `PUSH_UP`, `SQUAT`, `LUNGE`, or `PLANK`
 
 Success response:
 
