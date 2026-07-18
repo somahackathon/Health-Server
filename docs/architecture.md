@@ -85,6 +85,8 @@ sequenceDiagram
 
 AI results are fitness-management reference information and must not be described as medical diagnosis.
 
+The RN app identifies a local installation with `X-Installation-Id`. The server hashes this value before storing AI job rows. This value is not authentication and does not replace user accounts.
+
 ## Posture Video Analysis Flow
 
 ```mermaid
@@ -95,7 +97,7 @@ sequenceDiagram
 
     App->>Server: Upload exercise video
     Server->>Server: Store temporary file
-    Server->>AI: Forward video or agreed request
+    Server->>AI: Forward metadata and video multipart
     AI-->>Server: Return posture result
     Server->>Server: Delete temporary video
     Server-->>App: Return result

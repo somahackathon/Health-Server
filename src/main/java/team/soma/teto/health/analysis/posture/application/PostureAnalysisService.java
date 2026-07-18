@@ -58,11 +58,9 @@ public class PostureAnalysisService {
         AiAnalysisJob job = aiAnalysisJobService.createJob(installationHash, AnalysisType.POSTURE, writeJson(aiRequest), JOB_TTL);
         aiAnalysisJobService.start(job);
 
-        // The server must not keep raw video beyond the analysis lifecycle, so the
-        // temp file is always removed once the AI call finishes, success or failure.
         Path tempVideoPath = videoStorageService.storeTemporarily(video);
         try {
-            PostureAnalysisAiResponse aiResponse = requestAnalysis(job, aiRequest);
+            PostureAnalysisAiResponse aiResponse = requestAnalysis(job, aiRequest, tempVideoPath);
             aiAnalysisJobService.complete(job, writeJson(aiResponse), aiResponse.modelVersion());
             return toResponse(job, aiResponse);
         } finally {
@@ -70,9 +68,9 @@ public class PostureAnalysisService {
         }
     }
 
-    private PostureAnalysisAiResponse requestAnalysis(AiAnalysisJob job, PostureAnalysisAiRequest aiRequest) {
+    private PostureAnalysisAiResponse requestAnalysis(AiAnalysisJob job, PostureAnalysisAiRequest aiRequest, Path tempVideoPath) {
         try {
-            return postureAiClient.analyze(aiRequest);
+            return postureAiClient.analyze(aiRequest, tempVideoPath);
         } catch (AiClientException exception) {
             aiAnalysisJobService.fail(job, exception.failureCode(), exception.getMessage());
             throw new BusinessException(AnalysisJobErrorCode.AI_ANALYSIS_FAILED, exception.getMessage());

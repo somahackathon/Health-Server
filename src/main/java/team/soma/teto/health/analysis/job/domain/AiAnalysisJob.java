@@ -22,7 +22,8 @@ public class AiAnalysisJob extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "public_id", nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "public_id", nullable = false, unique = true, length = 36, columnDefinition = "CHAR(36)")
     private UUID publicId;
 
     @Column(name = "installation_hash", nullable = false, length = 128)

@@ -51,6 +51,22 @@ class AiAnalysisJobServiceTest {
     }
 
     @Test
+    void cleanupProcessesMoreJobsThanBatchSize() {
+        Instant past = Instant.now().minusSeconds(120);
+        for (int index = 0; index < 5; index++) {
+            aiAnalysisJobRepository.save(AiAnalysisJob.create("install-batch-" + index, AnalysisType.FITNESS, "{\"a\":1}", past));
+        }
+
+        AnalysisJobCleanupResult result = aiAnalysisJobService.cleanupExpiredJobs();
+
+        assertThat(result.expiredJobCount()).isEqualTo(5);
+        assertThat(result.payloadsPurgedCount()).isEqualTo(5);
+        assertThat(aiAnalysisJobRepository.findAll().stream()
+                .filter(job -> job.getInstallationHash().startsWith("install-batch-"))
+                .allMatch(job -> job.getStatus() == AnalysisStatus.EXPIRED && job.getRequestPayload() == null)).isTrue();
+    }
+
+    @Test
     void getJobThrowsWhenInstallationHashDoesNotMatch() {
         AiAnalysisJob job = aiAnalysisJobRepository.save(
                 AiAnalysisJob.create("install-owner", AnalysisType.POSTURE, null, Instant.now().plusSeconds(3600)));

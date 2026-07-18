@@ -199,10 +199,10 @@ class DomainRepositoryTest {
         assertThat(aiAnalysisJobRepository.findAllByStatusAndExpiresAtBefore(AnalysisStatus.PENDING, now))
                 .extracting(AiAnalysisJob::getPublicId)
                 .containsExactly(expired.getPublicId());
-        assertThat(aiAnalysisJobRepository.findExpiredJobsByStatuses(List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING), now))
+        assertThat(aiAnalysisJobRepository.findExpiredJobsByStatuses(List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING), now, PageRequest.of(0, 10)))
                 .extracting(AiAnalysisJob::getPublicId)
                 .containsExactly(processing.getPublicId(), expired.getPublicId());
-        assertThat(aiAnalysisJobRepository.findAllByExpiresAtBefore(now)).hasSize(2);
+        assertThat(aiAnalysisJobRepository.findExpiredJobsWithPayloads(now, PageRequest.of(0, 10))).hasSize(1);
     }
 
     @Test

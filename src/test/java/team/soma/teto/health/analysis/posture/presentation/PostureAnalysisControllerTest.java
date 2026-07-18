@@ -25,6 +25,8 @@ import team.soma.teto.health.global.config.RequestHeaderNames;
 @ActiveProfiles("test")
 class PostureAnalysisControllerTest {
 
+    private static final String INSTALLATION_ID = "33333333-3333-4333-8333-333333333333";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,7 +40,7 @@ class PostureAnalysisControllerTest {
         mockMvc.perform(multipart("/api/posture-analyses")
                         .file(video)
                         .param("exerciseType", "SQUAT")
-                        .header(RequestHeaderNames.INSTALLATION_HASH, "install-posture-test"))
+                        .header(RequestHeaderNames.INSTALLATION_ID, INSTALLATION_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.status").value("COMPLETED"))
@@ -60,8 +62,28 @@ class PostureAnalysisControllerTest {
         mockMvc.perform(multipart("/api/posture-analyses")
                         .file(video)
                         .param("exerciseType", "SQUAT")
-                        .header(RequestHeaderNames.INSTALLATION_HASH, "install-posture-test"))
+                        .header(RequestHeaderNames.INSTALLATION_ID, INSTALLATION_ID))
                 .andExpect(status().isUnsupportedMediaType())
                 .andExpect(jsonPath("$.error.code").value("VIDEO_UNSUPPORTED_TYPE"));
+    }
+
+    @Test
+    void rejectMissingVideoPart() throws Exception {
+        mockMvc.perform(multipart("/api/posture-analyses")
+                        .param("exerciseType", "SQUAT")
+                        .header(RequestHeaderNames.INSTALLATION_ID, INSTALLATION_ID))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("COMMON_INVALID_INPUT"));
+    }
+
+    @Test
+    void rejectMissingInstallationIdHeader() throws Exception {
+        MockMultipartFile video = new MockMultipartFile("video", "squat.mp4", "video/mp4", "fake-video-bytes".getBytes());
+
+        mockMvc.perform(multipart("/api/posture-analyses")
+                        .file(video)
+                        .param("exerciseType", "SQUAT"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("COMMON_INVALID_INPUT"));
     }
 }

@@ -8,3 +8,17 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+
+app:
+  ai:
+    mode: mock
+  analysis:
+    cleanup-batch-size: 2
+  video:
+    temp-dir: ${java.io.tmpdir}/health-test-videos
+    allowed-content-types:
+      - video/mp4
+      - video/quicktime
+    allowed-extensions:
+      - .mp4
+      - .mov
