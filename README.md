@@ -1,5 +1,16 @@
 # Health Server
 
+## PAPS Reference Query API
+
+The RN app can query active PAPS reference metadata from the server:
+
+- `GET /api/v1/paps/components`: active fitness components ordered by display order.
+- `GET /api/v1/paps/test-items`: active test items for input UI configuration.
+- `GET /api/v1/paps/test-items?component={componentCode}`: active test items for one fitness component.
+- `GET /api/v1/paps/standards/current`: the currently active standard version.
+
+`official=false` means the active standard version is an internal temporary standard, not an official PAPS source. PAPS evaluation, grade calculation, and score calculation APIs are not implemented yet.
+
 AI 기반 PAPS 체력 관리 서비스의 Spring Boot 백엔드 서버입니다.
 
 React Native 앱은 학생의 생년월일, 성별, 키, 체중, PAPS 측정 기록과 분석 이력을 로컬 SQLite에 저장합니다. 서버는 요청 검증, PAPS 판정, AI 서버 연동, 임시 영상 전달을 담당하며 사용자의 장기 데이터를 영구 저장하지 않습니다.

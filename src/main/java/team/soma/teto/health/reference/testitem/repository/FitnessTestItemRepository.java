@@ -18,16 +18,19 @@ public interface FitnessTestItemRepository extends JpaRepository<FitnessTestItem
             from FitnessTestItem item
             join item.component component
             where item.active = true
-            order by component.displayOrder asc, item.id asc
+              and component.active = true
+            order by component.displayOrder asc, item.name asc
             """)
     List<FitnessTestItem> findActiveItems();
 
     @Query("""
             select item
             from FitnessTestItem item
+            join item.component component
             where item.component = :component
               and item.active = true
-            order by item.id asc
+              and component.active = true
+            order by item.name asc
             """)
     List<FitnessTestItem> findActiveItemsByComponent(@Param("component") FitnessComponent component);
 
