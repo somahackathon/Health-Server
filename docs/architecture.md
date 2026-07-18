@@ -25,8 +25,10 @@ The product does not require signup or login. Keeping long-term user data in RN 
 ## Data Boundary
 
 - Device data: user profile inputs, PAPS records, analysis history.
-- Server data: PAPS items, standard versions, server common codes, AI analysis job state.
+- Server data: PAPS fitness components, test items, standard versions, standard ranges, and temporary AI analysis job state.
 - Temporary server files: exercise videos only while forwarding posture analysis requests.
+
+The server persists `FitnessComponent`, `FitnessTestItem`, `PapsStandardVersion`, `PapsStandard`, and `AiAnalysisJob`. It does not persist member accounts, body profiles, PAPS assessment history, exercise solutions, or long-term posture feedback. `AiAnalysisJob` payloads are temporary data and must be deleted after expiration.
 
 ## PAPS Evaluation Flow
 
@@ -44,6 +46,8 @@ sequenceDiagram
 ```
 
 Official PAPS standards and temporary self-defined standards must be clearly distinguished in data.
+
+Actual PAPS grade ranges are TODO until official source data or a team-approved internal standard is available.
 
 ## Fitness AI Analysis Flow
 

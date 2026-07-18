@@ -106,7 +106,21 @@ AI API 계약은 `docs/ai-contract.md`에서 관리합니다.
 - 서버 파일시스템: 자세 분석 중 필요한 영상만 임시 저장할 수 있으며 성공 또는 실패 후 삭제해야 합니다.
 - 저장 금지: 장기 사용자 기록, raw 영상, 영상 경로, 민감정보, 의료 진단성 데이터.
 
+## 서버 영속성 모델
+
+MariaDB에는 다음 Entity만 서버 공통 데이터로 저장합니다.
+
+- `FitnessComponent`
+- `FitnessTestItem`
+- `PapsStandardVersion`
+- `PapsStandard`
+- `AiAnalysisJob`
+
+사용자별 PAPS 평가 이력, 운동 솔루션, 자세 피드백 장기 이력은 서버에 저장하지 않고 RN SQLite에 남깁니다. AI 분석 작업의 요청/결과 payload는 영구 기록이 아니라 만료 전 임시 조회를 위한 데이터이며, 만료 후 삭제 대상입니다.
+
+PAPS 기준은 `PapsStandardVersion`으로 버전을 구분합니다. `HACKATHON_V1`은 자체 기준 버전이며, 실제 PAPS 등급 구간은 공식 자료 또는 팀 합의 후 `PapsStandard` 데이터로 추가해야 합니다.
+
 ## 현재 개발 상태
 
-초기 프로젝트 세팅 단계입니다. 비즈니스 도메인, API, DB migration, AI 실제 연동, 파일 업로드 기능은 아직 구현되지 않았습니다.
+초기 영속성 기반 구축 단계입니다. API, AI 실제 연동, 파일 업로드 기능과 실제 PAPS 등급 기준 데이터는 아직 구현되지 않았습니다.
 
