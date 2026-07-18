@@ -45,7 +45,7 @@ Content-Type: `multipart/form-data`
 Parts:
 
 - `video`: mp4 or mov video file
-- `exerciseType`: `PUSH_UP` or `SIT_AND_REACH`
+- `exerciseType`: `PUSH_UP` or `CURL_UP`
 
 Success response:
 

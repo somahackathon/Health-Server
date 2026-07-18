@@ -97,7 +97,7 @@ Transport:
 
 Parts:
 
-- `exerciseType`: text, for example `PUSH_UP` or `SIT_AND_REACH`
+- `exerciseType`: text, for example `PUSH_UP` or `CURL_UP`
 - `video`: binary video file
 
 Spring-generated multipart filenames are safe placeholders. Original client filenames are not forwarded.

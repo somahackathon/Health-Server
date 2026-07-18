@@ -43,6 +43,12 @@ app:
     fitness-path: ${AI_FITNESS_PATH:/fitness/analyze}
     posture-path: ${AI_POSTURE_PATH:/posture/analyze}
     retry-count: ${AI_RETRY_COUNT:0}
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
+      base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+      connect-timeout: ${GEMINI_CONNECT_TIMEOUT:5s}
+      read-timeout: ${GEMINI_READ_TIMEOUT:90s}
   analysis:
     cleanup-batch-size: ${ANALYSIS_CLEANUP_BATCH_SIZE:100}
   video:
