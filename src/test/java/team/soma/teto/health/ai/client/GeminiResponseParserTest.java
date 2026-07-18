@@ -10,7 +10,7 @@ import team.soma.teto.health.ai.dto.GeminiCandidate;
 import team.soma.teto.health.ai.dto.GeminiContent;
 import team.soma.teto.health.ai.dto.GeminiGenerateResponse;
 import team.soma.teto.health.ai.dto.GeminiPart;
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 
 class GeminiResponseParserTest {
 

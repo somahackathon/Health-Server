@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import team.soma.teto.health.ai.dto.GeminiGenerateRequest;
 import team.soma.teto.health.ai.dto.PoseExtractionResult;
-import team.soma.teto.health.analysis.posture.domain.ExerciseType;
+import team.soma.teto.health.ai.posture.domain.ExerciseType;
 
 class PosturePromptFactoryTest {
 

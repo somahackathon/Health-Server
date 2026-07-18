@@ -1,7 +1,7 @@
 package team.soma.teto.health.ai.error;
 
 import org.springframework.http.HttpStatus;
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 import team.soma.teto.health.global.error.ErrorCode;
 
 public enum AiErrorCode implements ErrorCode {

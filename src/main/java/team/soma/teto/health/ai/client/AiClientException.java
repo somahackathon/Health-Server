@@ -1,6 +1,6 @@
 package team.soma.teto.health.ai.client;
 
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 
 public class AiClientException extends RuntimeException {
 

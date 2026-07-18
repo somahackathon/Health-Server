@@ -17,10 +17,10 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import team.soma.teto.health.analysis.job.domain.AiAnalysisJob;
-import team.soma.teto.health.analysis.job.domain.AnalysisStatus;
-import team.soma.teto.health.analysis.job.domain.AnalysisType;
-import team.soma.teto.health.analysis.job.repository.AiAnalysisJobRepository;
+import team.soma.teto.health.ai.job.domain.AiAnalysisJob;
+import team.soma.teto.health.ai.job.domain.AnalysisStatus;
+import team.soma.teto.health.ai.job.domain.AnalysisType;
+import team.soma.teto.health.ai.job.repository.AiAnalysisJobRepository;
 import team.soma.teto.health.reference.component.domain.FitnessComponent;
 import team.soma.teto.health.reference.component.domain.FitnessComponentCode;
 import team.soma.teto.health.reference.component.repository.FitnessComponentRepository;

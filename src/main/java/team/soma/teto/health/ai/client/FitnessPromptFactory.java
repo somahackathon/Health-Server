@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.GeminiGenerateRequest;
-import team.soma.teto.health.analysis.fitness.dto.FitnessAnalysisRequest;
+import team.soma.teto.health.ai.fitness.dto.FitnessAnalysisRequest;
 import team.soma.teto.health.reference.component.domain.FitnessComponentCode;
 import team.soma.teto.health.reference.testitem.domain.FitnessTestItemCode;
 

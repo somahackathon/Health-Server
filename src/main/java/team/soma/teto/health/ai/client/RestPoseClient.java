@@ -12,7 +12,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 import team.soma.teto.health.ai.dto.PoseExtractionResult;
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 
 @Component
 public class RestPoseClient implements PoseClient {

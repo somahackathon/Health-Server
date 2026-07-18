@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.GeminiContent;
 import team.soma.teto.health.ai.dto.GeminiGenerateResponse;
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 
 @Component
 public class GeminiResponseParser {

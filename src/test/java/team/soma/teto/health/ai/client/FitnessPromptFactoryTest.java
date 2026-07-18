@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import team.soma.teto.health.ai.dto.GeminiGenerateRequest;
-import team.soma.teto.health.analysis.fitness.dto.FitnessAnalysisRequest;
+import team.soma.teto.health.ai.fitness.dto.FitnessAnalysisRequest;
 import team.soma.teto.health.reference.standard.domain.Gender;
 import team.soma.teto.health.reference.testitem.domain.FitnessTestItemCode;
 import team.soma.teto.health.reference.testitem.domain.MeasurementUnit;

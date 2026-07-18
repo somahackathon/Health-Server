@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 import team.soma.teto.health.ai.dto.GeminiGenerateRequest;
 import team.soma.teto.health.ai.dto.GeminiGenerateResponse;
-import team.soma.teto.health.analysis.job.domain.AiFailureCode;
+import team.soma.teto.health.ai.job.domain.AiFailureCode;
 
 @Component
 public class RestGeminiClient implements GeminiClient {

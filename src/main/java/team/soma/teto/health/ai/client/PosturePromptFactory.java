@@ -8,7 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.GeminiGenerateRequest;
 import team.soma.teto.health.ai.dto.PoseExtractionResult;
-import team.soma.teto.health.analysis.posture.domain.ExerciseType;
+import team.soma.teto.health.ai.posture.domain.ExerciseType;
 
 @Component
 public class PosturePromptFactory {
