@@ -31,6 +31,26 @@ public interface PapsStandardRepository extends JpaRepository<PapsStandard, Long
             @Param("age") int age
     );
 
+    @Query("""
+            select standard
+            from PapsStandard standard
+            join fetch standard.testItem testItem
+            where standard.version = :version
+              and standard.testItem in :testItems
+              and standard.schoolLevel = :schoolLevel
+              and standard.gender = :gender
+              and standard.minimumAge <= :age
+              and standard.maximumAge >= :age
+            order by testItem.id asc, standard.grade asc
+            """)
+    List<PapsStandard> findCandidateStandards(
+            @Param("version") PapsStandardVersion version,
+            @Param("testItems") List<FitnessTestItem> testItems,
+            @Param("schoolLevel") SchoolLevel schoolLevel,
+            @Param("gender") Gender gender,
+            @Param("age") int age
+    );
+
     List<PapsStandard> findAllByVersion(PapsStandardVersion version);
 
     List<PapsStandard> findAllByTestItem(FitnessTestItem testItem);

@@ -58,7 +58,15 @@ The RN app reads PAPS reference metadata before submitting any future evaluation
 - `GET /api/v1/paps/test-items?component={componentCode}` narrows measurement items to one component.
 - `GET /api/v1/paps/standards/current` returns the single active standard version.
 
-The standard version response includes `official`. `official=false` identifies an internal temporary standard; `official=true` identifies a version backed by an official PAPS source. The PAPS evaluation API is still pending and should be implemented separately after the standard data is confirmed.
+The standard version response includes `official`. `official=false` identifies an internal temporary standard; `official=true` identifies a version backed by an official PAPS source.
+
+## PAPS Evaluation API
+
+`POST /api/v1/paps/evaluations` accepts profile fields and PAPS measurement records, validates the request, calculates age from `assessmentDate`, calculates BMI on the server, loads the single active `PapsStandardVersion`, and evaluates each measurement against `PapsStandard` ranges.
+
+The server does not persist evaluation requests or results. The RN app stores returned results in local SQLite. BMI is always generated from height and weight; client-provided `BMI` measurements are rejected. A request may include a partial set of fitness components, but it may include only one measurement item per component.
+
+The MVP school-level policy is fixed to `HIGH` until the product defines an explicit school-level contract. The response includes item-level grades and completeness information. It does not include an overall grade because no official or team-approved aggregation policy is confirmed.
 
 ## Fitness AI Analysis Flow
 
