@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -23,10 +22,12 @@ public class HttpPostureAiClient extends HttpAiClientSupport implements PostureA
     private static final String POSE_MODEL_VERSION = "ai-python-pose-v1";
 
     private final AiProperties aiProperties;
+    private final GeminiPostureFeedbackGenerator feedbackGenerator;
 
-    public HttpPostureAiClient(AiProperties aiProperties, ObjectMapper objectMapper) {
+    public HttpPostureAiClient(AiProperties aiProperties, GeminiPostureFeedbackGenerator feedbackGenerator, ObjectMapper objectMapper) {
         super(aiProperties, objectMapper);
         this.aiProperties = aiProperties;
+        this.feedbackGenerator = feedbackGenerator;
     }
 
     @Override
@@ -76,26 +77,11 @@ public class HttpPostureAiClient extends HttpAiClientSupport implements PostureA
                 request.correlationId(),
                 POSE_MODEL_VERSION,
                 AnalysisStatus.COMPLETED,
-                feedback(response)
+                feedback(request, response)
         );
     }
 
-    private List<PostureAnalysisAiResponse.Feedback> feedback(PoseExtractionAiResponse response) {
-        List<PostureAnalysisAiResponse.Feedback> items = new ArrayList<>();
-        items.add(new PostureAnalysisAiResponse.Feedback(
-                "POSE_METRICS_EXTRACTED",
-                "자세 분석 지표를 추출했습니다.",
-                "LOW"
-        ));
-        if (response.metrics() != null) {
-            response.metrics().keySet().stream()
-                    .sorted()
-                    .forEach(key -> items.add(new PostureAnalysisAiResponse.Feedback(
-                            "POSE_METRIC_" + key.toUpperCase(java.util.Locale.ROOT),
-                            String.valueOf(response.metrics().get(key)),
-                            "LOW"
-                    )));
-        }
-        return items;
+    private List<PostureAnalysisAiResponse.Feedback> feedback(PostureAnalysisAiRequest request, PoseExtractionAiResponse response) {
+        return feedbackGenerator.generate(request.exerciseType(), response.metrics());
     }
 }
