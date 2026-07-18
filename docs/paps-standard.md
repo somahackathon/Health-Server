@@ -1,152 +1,99 @@
 # PAPS Standard Data
 
-## Status
+## Active Version
 
-Official PAPS standard rows are not seeded yet.
+- code: `PAPS_OFFICIAL_2025_V1`
+- name: `2025 PAPS Official Standard V1`
+- official: `true`
+- source type: `OFFICIAL`
+- source name: `학교건강검사규칙 별표 4 신체능력검사 기준표`
+- source URL: `https://www.law.go.kr/LSW/flDownload.do?bylClsCd=110201&flSeq=149708821&gubun=`
+- effective from: `2025-03-10`
 
-The server can now represent official grade-level PAPS criteria without converting grade into age. Evaluation requests carry both `schoolLevel` and `schoolGrade`, and `paps_standard` stores both values.
+`HACKATHON_V1` remains in the database for traceability but is deactivated by the official seed migration.
 
-Do not insert official PAPS ranges by mapping school grade to ages such as high school grade 1 equals age 15. Use the exact school level and school grade from the official table.
+## Scope
 
-## Supported Classification Axes
+Official rows are seeded for:
 
-- `schoolLevel`: `ELEMENTARY`, `MIDDLE`, `HIGH`
-- `schoolGrade`: 1 to 6 for elementary school, 1 to 3 for middle or high school
-- `gender`: `MALE`, `FEMALE`
-- `testItem`: `fitness_test_item.code`
-- `grade`: 1 to 5
+- elementary school grades 4 to 6
+- middle school grades 1 to 3
+- high school grades 1 to 3
+- `MALE` and `FEMALE`
 
-`minimumAge` and `maximumAge` remain in the table for compatibility, but official criteria lookup uses `schoolLevel` and `schoolGrade`.
+The official criteria are school-grade based. The server stores `minimum_age=0` and `maximum_age=99` for compatibility, but evaluation lookup uses `schoolLevel`, `schoolGrade`, `gender`, and `testItem`.
 
-## Required Source Check
+## General Fitness Standards
 
-Before inserting official rows, verify the source document directly:
+General item-level standards are stored in `paps_standard` as 1 to 5 grade intervals.
 
-- issuing institution
-- document title
-- applicable year
-- school level
-- school grade
-- gender
-- test item
-- unit
-- grade 1 to 5 criteria
-- inclusive or exclusive boundary wording
+The seed migration inserts 170 supported school-level, grade, gender, and item combinations, producing 850 grade rows.
 
-Allowed source types:
+Supported official item codes:
 
-- Ministry of Education
-- Student Health Information Center
-- official Office of Education PAPS manuals
-- National Law Information Center
-- official public data from the Ministry of Education or Offices of Education
+- `SHUTTLE_RUN`
+- `LONG_RUN_WALK`
+- `STEP_TEST`
+- `SIT_AND_REACH`
+- `TOTAL_FLEXIBILITY`
+- `PUSH_UP`
+- `CURL_UP`
+- `GRIP_STRENGTH`
+- `SPRINT_50M`
+- `STANDING_LONG_JUMP`
 
-Do not use blogs, cafes, knowledge sites, private spreadsheets, or search result snippets.
+Elementary grade 4 to 6 `PUSH_UP` is not seeded because the official table says elementary grades 3 to 6 do not conduct that item. For girls, the official item is knee push-up; the server uses the shared `PUSH_UP` code and applies the female official knee-push-up ranges.
 
-## Official Source Candidates
+## Boundary Conversion
 
-These sources identify official or public-agency PAPS materials, but their attached tables still need direct numeric verification before seeding DB rows:
+The official table prints display ranges for grade 5 and grade 1, but those outer ranges are not closed scoring limits. Values outside those printed ranges still map to grade 5 or grade 1 respectively.
 
-- Ministry of Education, `학생건강체력평가제(PAPS)측정 매뉴얼(2009 수정본)`, https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=316&boardSeq=14508&lev=0&m=0302&opType=N&page=1&s=moe&searchType=null&statusYN=C
-- Student Health Information Center, `학생건강체력평가(PAPS) 운영 매뉴얼`, source `제주특별자치도교육청`, https://www.schoolhealth.kr/web/search/selectTotalSearchList.do?bbsId=&bbsTyCode=&kwdLogYn=N&lstnum1=3744&pageIndex=1&pageUnit=10&searchWrd=%ED%95%99%EC%83%9D%EA%B1%B4%EA%B0%95%EC%B2%B4%EB%A0%A5%ED%8F%89%EA%B0%80%2F&sortOrder=
-- Gyeonggi Provincial Office of Education, `학생건강체력평가(PAPS) 매뉴얼 및 단위학교 학생 체력증진 기본 계획`, https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10100&nttSn=106640
+For higher-is-better items, a row such as:
 
-## Seed SQL Template
+- grade 5: 19 to 25
+- grade 4: 26 to 44
+- grade 3: 45 to 68
+- grade 2: 69 to 95
+- grade 1: 96 to 103
 
-Use a new Flyway migration after verifying the official numbers. Do not edit existing migrations.
+is stored as:
 
-```sql
-INSERT INTO paps_standard_version (
-    code,
-    name,
-    source_type,
-    source_name,
-    source_url,
-    official,
-    active,
-    created_at,
-    updated_at
-) VALUES (
-    'PAPS_OFFICIAL_YYYY_V1',
-    'PAPS official criteria YYYY',
-    'OFFICIAL',
-    '<official document title>',
-    '<official source url>',
-    TRUE,
-    FALSE,
-    CURRENT_TIMESTAMP(6),
-    CURRENT_TIMESTAMP(6)
-);
+- grade 5: `< 26`
+- grade 4: `26 <= value < 45`
+- grade 3: `45 <= value < 69`
+- grade 2: `69 <= value < 96`
+- grade 1: `96 <= value`
 
-INSERT INTO paps_standard (
-    version_id,
-    test_item_id,
-    school_level,
-    school_grade,
-    gender,
-    minimum_age,
-    maximum_age,
-    grade,
-    minimum_value,
-    maximum_value,
-    minimum_inclusive,
-    maximum_inclusive,
-    created_at,
-    updated_at
-) VALUES
-(
-    (SELECT id FROM paps_standard_version WHERE code = 'PAPS_OFFICIAL_YYYY_V1'),
-    (SELECT id FROM fitness_test_item WHERE code = '<TEST_ITEM_CODE>'),
-    '<ELEMENTARY|MIDDLE|HIGH>',
-    <SCHOOL_GRADE>,
-    '<MALE|FEMALE>',
-    0,
-    99,
-    <GRADE_1_TO_5>,
-    <MINIMUM_VALUE_OR_NULL>,
-    <MAXIMUM_VALUE_OR_NULL>,
-    <TRUE_OR_FALSE>,
-    <TRUE_OR_FALSE>,
-    CURRENT_TIMESTAMP(6),
-    CURRENT_TIMESTAMP(6)
-);
-```
+Lower-is-better items use the same adjacent half-open interval principle in the opposite direction.
 
-Only activate the official version after the dataset covers the intended production scope:
+## BMI Standards
 
-```sql
-UPDATE paps_standard_version
-SET active = FALSE, updated_at = CURRENT_TIMESTAMP(6)
-WHERE active = TRUE;
+BMI is not mapped to the general 1 to 5 grade scale. It is stored separately in `paps_bmi_standard` and returned as one of:
 
-UPDATE paps_standard_version
-SET active = TRUE, updated_at = CURRENT_TIMESTAMP(6)
-WHERE code = 'PAPS_OFFICIAL_YYYY_V1';
-```
+- `THIN`
+- `NORMAL`
+- `OVERWEIGHT`
+- `MILD_OBESITY`
+- `SEVERE_OBESITY`
 
-## Data Entry Rules
+The seed migration inserts 88 BMI category rows. Male high school grade 2 and grade 3 do not have an `OVERWEIGHT` category in the official table, so no artificial row is inserted for those combinations.
 
-- Keep official and internal criteria in separate versions.
-- Use `code` lookups instead of numeric foreign key IDs.
-- Keep the official unit and boundary precision.
-- Express open-ended ranges with `NULL`, not artificial large numbers.
-- Preserve official inclusive/exclusive wording exactly.
-- Insert five grade rows for each supported school level, grade, gender, and test item combination.
+BMI is used only as a fitness-management reference category and must not be presented as medical diagnosis or appearance evaluation.
 
-## Validation Required
+## Excluded Item
 
-- Exactly one active standard version.
-- Official version metadata has `sourceName` and `sourceUrl`.
-- Every supported item, school level, school grade, gender, and grade combination exists.
-- Each combination has grades 1 through 5.
-- No overlapping intervals.
-- No unintended gaps between adjacent intervals.
-- Integer items do not use unnecessary decimal boundaries.
-- Representative and boundary values evaluate through `PapsGradeEvaluator`.
+`BODY_FAT_PERCENTAGE` is not seeded because this official source does not provide body-fat-percentage criteria. The migration deactivates this item so the RN app does not expose an unsupported official evaluation item.
 
-## Unsupported In This Branch
+## Validation
 
-- No official criterion number was inserted.
-- No official standard version was activated.
-- No PAPS criterion value was copied into Java code.
-- No school grade was converted to age.
+The test suite verifies:
+
+- exactly one active official version
+- MariaDB Flyway migration success through Testcontainers
+- 850 general standard rows
+- 88 BMI standard rows
+- 1 to 5 grade completeness for every supported general item combination
+- no elementary `PUSH_UP` standards
+- no active `BODY_FAT_PERCENTAGE`
+- no artificial male high school grade 2 or grade 3 `OVERWEIGHT` BMI category
+- representative official evaluation and boundary values through `EvaluatePapsService`

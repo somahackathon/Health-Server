@@ -49,12 +49,16 @@ class MariaDbMigrationTest {
         Integer componentCount = jdbcTemplate.queryForObject("select count(*) from fitness_component", Integer.class);
         Integer testItemCount = jdbcTemplate.queryForObject("select count(*) from fitness_test_item", Integer.class);
         Integer activeVersionCount = jdbcTemplate.queryForObject("select count(*) from paps_standard_version where active = true", Integer.class);
+        String activeVersionCode = jdbcTemplate.queryForObject("select code from paps_standard_version where active = true", String.class);
         Integer standardCount = jdbcTemplate.queryForObject("select count(*) from paps_standard", Integer.class);
+        Integer bmiStandardCount = jdbcTemplate.queryForObject("select count(*) from paps_bmi_standard", Integer.class);
 
         assertThat(componentCount).isEqualTo(5);
         assertThat(testItemCount).isEqualTo(12);
         assertThat(activeVersionCount).isEqualTo(1);
-        assertThat(standardCount).isZero();
+        assertThat(activeVersionCode).isEqualTo("PAPS_OFFICIAL_2025_V1");
+        assertThat(standardCount).isEqualTo(850);
+        assertThat(bmiStandardCount).isEqualTo(88);
     }
 
     @Test

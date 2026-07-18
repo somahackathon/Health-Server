@@ -47,7 +47,7 @@ sequenceDiagram
 
 Official PAPS standards and temporary self-defined standards must be clearly distinguished in data.
 
-Actual PAPS grade ranges are TODO until official source data or a team-approved internal standard is available.
+Official 2025 PAPS grade ranges are seeded for elementary grade 4 through high school grade 3. Internal temporary standards remain deactivated unless explicitly selected by a future migration.
 
 ## PAPS Reference Query API
 
@@ -66,7 +66,7 @@ The standard version response includes `official`. `official=false` identifies a
 
 The server does not persist evaluation requests or results. The RN app stores returned results in local SQLite. BMI is always generated from height and weight; client-provided `BMI` measurements are rejected. A request may include a partial set of fitness components, but it may include only one measurement item per component.
 
-The RN app must send the user's actual school level and grade so official grade-level PAPS criteria are not inferred from age. `schoolLevel` is one of `ELEMENTARY`, `MIDDLE`, or `HIGH`. `schoolGrade` is 1 through 6 for elementary school and 1 through 3 for middle or high school. The response includes item-level grades and completeness information. It does not include an overall grade because no official or team-approved aggregation policy is confirmed.
+The RN app must send the user's actual school level and grade so official grade-level PAPS criteria are not inferred from age. `schoolLevel` is one of `ELEMENTARY`, `MIDDLE`, or `HIGH`. `schoolGrade` is 1 through 6 for elementary school and 1 through 3 for middle or high school. The response includes item-level grades, BMI category, and completeness information. It does not include an overall grade because no official or team-approved aggregation policy is confirmed.
 
 ## Fitness AI Analysis Flow
 

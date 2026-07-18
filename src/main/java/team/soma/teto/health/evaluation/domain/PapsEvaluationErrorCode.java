@@ -17,7 +17,9 @@ public enum PapsEvaluationErrorCode implements ErrorCode {
     PAPS_CLIENT_BMI_NOT_ALLOWED("PAPS_CLIENT_BMI_NOT_ALLOWED", "BMI는 서버에서 계산하므로 직접 입력할 수 없습니다.", HttpStatus.BAD_REQUEST),
     PAPS_BMI_TEST_ITEM_NOT_FOUND("PAPS_BMI_TEST_ITEM_NOT_FOUND", "BMI 측정 종목 설정을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     PAPS_STANDARD_NOT_FOUND("PAPS_STANDARD_NOT_FOUND", "PAPS 기준 데이터를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    PAPS_STANDARD_OVERLAPPED("PAPS_STANDARD_OVERLAPPED", "PAPS 기준 데이터 구간이 중복되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    PAPS_STANDARD_OVERLAPPED("PAPS_STANDARD_OVERLAPPED", "PAPS 기준 데이터 구간이 중복되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    PAPS_BMI_STANDARD_NOT_FOUND("PAPS_BMI_STANDARD_NOT_FOUND", "BMI 기준 데이터를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    PAPS_BMI_STANDARD_OVERLAPPED("PAPS_BMI_STANDARD_OVERLAPPED", "BMI 기준 데이터 구간이 중복되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;

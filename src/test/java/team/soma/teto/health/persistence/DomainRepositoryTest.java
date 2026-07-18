@@ -98,7 +98,7 @@ class DomainRepositoryTest {
         assertThat(item.getUnit()).isEqualTo(MeasurementUnit.COUNT);
         assertThat(cardioItems).extracting(FitnessTestItem::getCode)
                 .containsExactly(FitnessTestItemCode.LONG_RUN_WALK, FitnessTestItemCode.SHUTTLE_RUN, FitnessTestItemCode.STEP_TEST);
-        assertThat(fitnessTestItemRepository.findActiveItems()).hasSize(12);
+        assertThat(fitnessTestItemRepository.findActiveItems()).hasSize(11);
         assertThat(fitnessTestItemRepository.existsByCode(FitnessTestItemCode.BMI)).isTrue();
     }
 
@@ -122,7 +122,7 @@ class DomainRepositoryTest {
 
         assertThat(version.getSourceType()).isEqualTo(StandardSourceType.INTERNAL);
         assertThat(version.getOfficial()).isFalse();
-        assertThat(activeVersions).extracting(PapsStandardVersion::getCode).contains("HACKATHON_V1");
+        assertThat(activeVersions).extracting(PapsStandardVersion::getCode).containsExactly("PAPS_OFFICIAL_2025_V1");
         assertThat(papsStandardVersionRepository.existsByCode("HACKATHON_V1")).isTrue();
     }
 
@@ -145,7 +145,16 @@ class DomainRepositoryTest {
 
     @Test
     void findPapsStandardCandidatesBySchoolGrade() {
-        PapsStandardVersion version = papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow();
+        PapsStandardVersion version = papsStandardVersionRepository.save(PapsStandardVersion.create(
+                "TEST_REPOSITORY_V1",
+                "Test Repository V1",
+                StandardSourceType.INTERNAL,
+                null,
+                null,
+                null,
+                null,
+                false
+        ));
         FitnessTestItem item = fitnessTestItemRepository.findByCode(FitnessTestItemCode.SHUTTLE_RUN).orElseThrow();
         PapsStandard standard = PapsStandard.create(
                 version,
@@ -171,7 +180,7 @@ class DomainRepositoryTest {
         assertThat(outsideCandidates).isEmpty();
         assertThat(gradeCandidates).hasSize(1);
         assertThat(papsStandardRepository.findAllByVersion(version)).hasSize(1);
-        assertThat(papsStandardRepository.findAllByTestItem(item)).hasSize(1);
+        assertThat(papsStandardRepository.findAllByTestItem(item)).isNotEmpty();
     }
 
     @Test

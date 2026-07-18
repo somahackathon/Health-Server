@@ -51,7 +51,7 @@ Only active components, active test items, and the single active standard versio
 
 The server validates profile and measurement inputs, calculates age from `assessmentDate`, calculates BMI from height and weight, and evaluates item-level grades from `PapsStandard` ranges. The request includes `schoolLevel` and `schoolGrade` because official PAPS criteria are organized by school grade, not exact age. Requests and results are not stored in MariaDB.
 
-Current blocker: the repository contains `HACKATHON_V1` metadata and PAPS items, but no verified `paps_standard` range rows. The schema now supports elementary, middle, and high school-grade-based criteria, but real evaluation requests cannot return grades from Seed Data until official criteria or team-approved internal criteria are added.
+The active standard version is `PAPS_OFFICIAL_2025_V1`, based on the 2025-03-10 revision of `학교건강검사규칙 별표 4 신체능력검사 기준표`. Official criteria are seeded for elementary grade 4 through high school grade 3. BMI is returned as an official category, not as a 1-5 grade.
 
 ## AI Analysis APIs
 
