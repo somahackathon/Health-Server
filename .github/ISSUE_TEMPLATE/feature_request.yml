@@ -1,0 +1,36 @@
+name: Feature request
+description: 새 기능 또는 변경 요청을 제안합니다.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 목적
+      description: 이 기능이 해결하려는 문제를 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 작업 범위
+      description: RN 앱, Spring 서버, MariaDB, AI 서버 중 필요한 변경 범위를 적어 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 기대 동작
+    validations:
+      required: true
+  - type: textarea
+    id: data_policy
+    attributes:
+      label: 데이터 저장 정책 확인
+      description: 사용자 장기 데이터, 영상, AI 결과 저장 여부를 적어 주세요.
+  - type: textarea
+    id: ai_contract
+    attributes:
+      label: AI 계약 변경 여부
+      description: AI 요청 또는 응답 형식 변경이 필요한지 적어 주세요.
+
