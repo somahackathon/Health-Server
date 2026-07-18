@@ -62,11 +62,11 @@ The standard version response includes `official`. `official=false` identifies a
 
 ## PAPS Evaluation API
 
-`POST /api/v1/paps/evaluations` accepts profile fields and PAPS measurement records, validates the request, calculates age from `assessmentDate`, calculates BMI on the server, loads the single active `PapsStandardVersion`, and evaluates each measurement against `PapsStandard` ranges.
+`POST /api/v1/paps/evaluations` accepts profile fields, `schoolGrade`, and PAPS measurement records, validates the request, calculates age from `assessmentDate`, calculates BMI on the server, loads the single active `PapsStandardVersion`, and evaluates each measurement against `PapsStandard` ranges.
 
 The server does not persist evaluation requests or results. The RN app stores returned results in local SQLite. BMI is always generated from height and weight; client-provided `BMI` measurements are rejected. A request may include a partial set of fitness components, but it may include only one measurement item per component.
 
-The MVP school-level policy is fixed to `HIGH` until the product defines an explicit school-level contract. The response includes item-level grades and completeness information. It does not include an overall grade because no official or team-approved aggregation policy is confirmed.
+The MVP school-level policy is fixed to `HIGH` until the product defines an explicit school-level contract. The RN app must send the user's actual high-school grade as `schoolGrade` so official grade-level PAPS criteria are not inferred from age. The response includes item-level grades and completeness information. It does not include an overall grade because no official or team-approved aggregation policy is confirmed.
 
 ## Fitness AI Analysis Flow
 

@@ -1,6 +1,8 @@
 package team.soma.teto.health.analysis.fitness.presentation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -20,9 +22,14 @@ public record FitnessAnalysisRequest(
     public record Profile(
             @NotNull @Past LocalDate birthDate,
             @NotNull Gender gender,
+            @NotNull @Min(1) @Max(3) Integer schoolGrade,
             @Positive double heightCm,
             @Positive double weightKg
     ) {
+
+        public Profile(LocalDate birthDate, Gender gender, double heightCm, double weightKg) {
+            this(birthDate, gender, 1, heightCm, weightKg);
+        }
     }
 
     public record RecordItem(

@@ -17,9 +17,14 @@ public record FitnessAnalysisAiRequest(
     public record Profile(
             LocalDate birthDate,
             Gender gender,
+            Integer schoolGrade,
             double heightCm,
             double weightKg
     ) {
+
+        public Profile(LocalDate birthDate, Gender gender, double heightCm, double weightKg) {
+            this(birthDate, gender, 1, heightCm, weightKg);
+        }
     }
 
     public record RecordItem(

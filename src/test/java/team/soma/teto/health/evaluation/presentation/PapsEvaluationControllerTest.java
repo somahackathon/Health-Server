@@ -53,6 +53,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,
@@ -69,6 +70,7 @@ class PapsEvaluationControllerTest {
                 .andExpect(jsonPath("$.error").value(nullValue()))
                 .andExpect(jsonPath("$.data.standardVersion.code").value("HACKATHON_V1"))
                 .andExpect(jsonPath("$.data.profile.age").value(17))
+                .andExpect(jsonPath("$.data.profile.schoolGrade").value(1))
                 .andExpect(jsonPath("$.data.profile.bmi").value(21.3))
                 .andExpect(jsonPath("$.data.completeness.complete").value(true))
                 .andExpect(jsonPath("$.data.measurements", hasSize(5)))
@@ -83,6 +85,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": null,
                                   "gender": "MALE",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,
@@ -102,6 +105,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "UNKNOWN",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,
@@ -121,6 +125,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2099-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,
@@ -140,6 +145,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,
@@ -162,6 +168,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
                                   "weightKg": 65.4,

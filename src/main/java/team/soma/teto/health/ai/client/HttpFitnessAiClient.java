@@ -68,6 +68,7 @@ public class HttpFitnessAiClient implements FitnessAiClient {
                 [학생 정보]
                 나이: 만 %d세
                 성별: %s
+                학년: %d
                 키: %s cm
                 몸무게: %s kg
 
@@ -76,7 +77,7 @@ public class HttpFitnessAiClient implements FitnessAiClient {
 
                 위 정보를 바탕으로 또래 평균과 비교하여 부족한 체력 요인을 진단하고
                 맞춤 운동 솔루션을 지정된 JSON 스키마로 작성해 주세요.
-                """.formatted(age, profile.gender().name(), profile.heightCm(), profile.weightKg(), records);
+                """.formatted(age, profile.gender().name(), profile.schoolGrade(), profile.heightCm(), profile.weightKg(), records);
     }
 
     private Map<String, Object> responseSchema() {

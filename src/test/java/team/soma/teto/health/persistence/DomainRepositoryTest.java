@@ -144,13 +144,14 @@ class DomainRepositoryTest {
     }
 
     @Test
-    void findPapsStandardCandidatesByAgeRange() {
+    void findPapsStandardCandidatesBySchoolGrade() {
         PapsStandardVersion version = papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow();
         FitnessTestItem item = fitnessTestItemRepository.findByCode(FitnessTestItemCode.SHUTTLE_RUN).orElseThrow();
         PapsStandard standard = PapsStandard.create(
                 version,
                 item,
                 SchoolLevel.MIDDLE,
+                2,
                 Gender.MALE,
                 13,
                 15,
@@ -162,9 +163,9 @@ class DomainRepositoryTest {
         );
         papsStandardRepository.saveAndFlush(standard);
 
-        List<PapsStandard> candidates = papsStandardRepository.findCandidateStandards(version, item, SchoolLevel.MIDDLE, Gender.MALE, 14);
-        List<PapsStandard> outsideCandidates = papsStandardRepository.findCandidateStandards(version, item, SchoolLevel.MIDDLE, Gender.MALE, 16);
-        List<PapsStandard> gradeCandidates = papsStandardRepository.findGradeRangeCandidates(version, item, SchoolLevel.MIDDLE, Gender.MALE, 1, 14);
+        List<PapsStandard> candidates = papsStandardRepository.findCandidateStandards(version, item, SchoolLevel.MIDDLE, 2, Gender.MALE);
+        List<PapsStandard> outsideCandidates = papsStandardRepository.findCandidateStandards(version, item, SchoolLevel.MIDDLE, 1, Gender.MALE);
+        List<PapsStandard> gradeCandidates = papsStandardRepository.findGradeRangeCandidates(version, item, SchoolLevel.MIDDLE, 2, Gender.MALE, 1);
 
         assertThat(candidates).hasSize(1);
         assertThat(outsideCandidates).isEmpty();

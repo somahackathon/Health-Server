@@ -93,7 +93,7 @@ public class EvaluatePapsService {
                 measurementValues.stream().map(PapsMeasurementValue::testItem).toList(),
                 schoolLevel,
                 request.gender(),
-                age
+                request.schoolGrade()
         );
         List<PapsMeasurementResultResponse> measurementResults = measurementValues.stream()
                 .map(measurement -> toMeasurementResult(measurement, standardsByTestItem))
@@ -102,7 +102,7 @@ public class EvaluatePapsService {
         PapsEvaluationCompletenessResponse completeness = createCompleteness(measurementResults);
         return new PapsEvaluationResponse(
                 PapsStandardVersionSummary.from(standardVersion),
-                new PapsEvaluationProfileResponse(age, schoolLevel.name(), request.gender().name(), request.heightCm(), request.weightKg(), bmi),
+                new PapsEvaluationProfileResponse(age, schoolLevel.name(), request.schoolGrade(), request.gender().name(), request.heightCm(), request.weightKg(), bmi),
                 completeness,
                 measurementResults
         );
@@ -219,9 +219,9 @@ public class EvaluatePapsService {
             List<FitnessTestItem> testItems,
             SchoolLevel schoolLevel,
             team.soma.teto.health.reference.standard.domain.Gender gender,
-            int age
+            int schoolGrade
     ) {
-        return papsStandardRepository.findCandidateStandards(standardVersion, testItems, schoolLevel, gender, age)
+        return papsStandardRepository.findCandidateStandards(standardVersion, testItems, schoolLevel, schoolGrade, gender)
                 .stream()
                 .collect(Collectors.groupingBy(PapsStandard::getTestItem));
     }

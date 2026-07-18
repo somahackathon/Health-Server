@@ -74,6 +74,7 @@ public class FitnessAnalysisService {
         FitnessAnalysisAiRequest.Profile profile = new FitnessAnalysisAiRequest.Profile(
                 request.profile().birthDate(),
                 request.profile().gender(),
+                request.profile().schoolGrade(),
                 request.profile().heightCm(),
                 request.profile().weightKg()
         );

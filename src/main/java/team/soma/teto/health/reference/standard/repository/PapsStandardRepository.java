@@ -18,17 +18,16 @@ public interface PapsStandardRepository extends JpaRepository<PapsStandard, Long
             where standard.version = :version
               and standard.testItem = :testItem
               and standard.schoolLevel = :schoolLevel
+              and standard.schoolGrade = :schoolGrade
               and standard.gender = :gender
-              and standard.minimumAge <= :age
-              and standard.maximumAge >= :age
             order by standard.grade asc
             """)
     List<PapsStandard> findCandidateStandards(
             @Param("version") PapsStandardVersion version,
             @Param("testItem") FitnessTestItem testItem,
             @Param("schoolLevel") SchoolLevel schoolLevel,
-            @Param("gender") Gender gender,
-            @Param("age") int age
+            @Param("schoolGrade") int schoolGrade,
+            @Param("gender") Gender gender
     );
 
     @Query("""
@@ -38,17 +37,16 @@ public interface PapsStandardRepository extends JpaRepository<PapsStandard, Long
             where standard.version = :version
               and standard.testItem in :testItems
               and standard.schoolLevel = :schoolLevel
+              and standard.schoolGrade = :schoolGrade
               and standard.gender = :gender
-              and standard.minimumAge <= :age
-              and standard.maximumAge >= :age
             order by testItem.id asc, standard.grade asc
             """)
     List<PapsStandard> findCandidateStandards(
             @Param("version") PapsStandardVersion version,
             @Param("testItems") List<FitnessTestItem> testItems,
             @Param("schoolLevel") SchoolLevel schoolLevel,
-            @Param("gender") Gender gender,
-            @Param("age") int age
+            @Param("schoolGrade") int schoolGrade,
+            @Param("gender") Gender gender
     );
 
     List<PapsStandard> findAllByVersion(PapsStandardVersion version);
@@ -61,17 +59,16 @@ public interface PapsStandardRepository extends JpaRepository<PapsStandard, Long
             where standard.version = :version
               and standard.testItem = :testItem
               and standard.schoolLevel = :schoolLevel
+              and standard.schoolGrade = :schoolGrade
               and standard.gender = :gender
               and standard.grade = :grade
-              and standard.minimumAge <= :age
-              and standard.maximumAge >= :age
             """)
     List<PapsStandard> findGradeRangeCandidates(
             @Param("version") PapsStandardVersion version,
             @Param("testItem") FitnessTestItem testItem,
             @Param("schoolLevel") SchoolLevel schoolLevel,
+            @Param("schoolGrade") int schoolGrade,
             @Param("gender") Gender gender,
-            @Param("grade") int grade,
-            @Param("age") int age
+            @Param("grade") int grade
     );
 }

@@ -4,9 +4,9 @@
 
 Official PAPS seed data is not added yet.
 
-The current official source uses school grade rows such as high school grade 1, grade 2, and grade 3. The current `PapsStandard` entity stores only `minimumAge` and `maximumAge`. Because school grade and age are not equivalent, the official table cannot be safely converted into the current schema without changing the model.
+The official source uses school grade rows such as high school grade 1, grade 2, and grade 3. The current server contract now carries `schoolGrade`, and `PapsStandard` stores `schoolGrade` so official grade-level criteria can be entered without converting school grade into age.
 
-Do not insert official PAPS grade ranges by mapping `HIGH 1/2/3` to ages such as 15/16/17. That would distort the official classification axis.
+Do not insert official PAPS grade ranges by mapping `HIGH 1/2/3` to ages such as 15/16/17. Use the explicit `schoolGrade` field.
 
 ## Checked Official Sources
 
@@ -33,6 +33,7 @@ Current `PapsStandard` fields:
 - `testItem`
 - `schoolLevel`
 - `gender`
+- `schoolGrade`
 - `minimumAge`
 - `maximumAge`
 - `grade`
@@ -49,16 +50,13 @@ Official PAPS criteria require a grade-level axis:
 - item
 - grade range
 
-The current model can represent `HIGH` and `MALE/FEMALE`, but it cannot represent high school grade 1, 2, and 3 without using age as a proxy. That proxy is not acceptable.
+The current model can represent `HIGH`, `schoolGrade`, and `MALE/FEMALE`. `minimumAge` and `maximumAge` remain in the table for compatibility, but official criteria lookup uses school grade instead of using age as a proxy.
 
-## Required Model Change Before Official Seed Data
+## Required Before Official Seed Data
 
-Add an explicit grade axis before importing official data. A minimal option is:
-
-- Add `schoolGrade` to `PapsStandard`.
-- Add `schoolGrade` to the evaluation request or define a product contract that maps RN profile data to a school grade without using age alone.
-- Update repository lookup to use `schoolLevel`, `schoolGrade`, `gender`, and `testItem`.
-- Keep `minimumAge` and `maximumAge` only if another confirmed standard source actually uses age.
+- RN must send `schoolGrade` in PAPS evaluation requests.
+- Official source rows must be entered with the exact school grade from the table.
+- Do not use birth date or calculated age to choose official high school grade rows.
 
 ## Data Entry Rules After Model Fix
 

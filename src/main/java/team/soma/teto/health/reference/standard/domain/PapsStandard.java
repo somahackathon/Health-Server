@@ -22,7 +22,7 @@ import team.soma.teto.health.reference.testitem.domain.FitnessTestItem;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_paps_standard_range_grade",
-                        columnNames = {"version_id", "test_item_id", "school_level", "gender", "minimum_age", "maximum_age", "grade"}
+                        columnNames = {"version_id", "test_item_id", "school_level", "school_grade", "gender", "grade"}
                 )
         }
 )
@@ -43,6 +43,9 @@ public class PapsStandard extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "school_level", nullable = false, length = 30)
     private SchoolLevel schoolLevel;
+
+    @Column(name = "school_grade", nullable = false)
+    private Integer schoolGrade;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false, length = 20)
@@ -76,6 +79,7 @@ public class PapsStandard extends BaseTimeEntity {
             PapsStandardVersion version,
             FitnessTestItem testItem,
             SchoolLevel schoolLevel,
+            Integer schoolGrade,
             Gender gender,
             Integer minimumAge,
             Integer maximumAge,
@@ -85,10 +89,11 @@ public class PapsStandard extends BaseTimeEntity {
             Boolean minimumInclusive,
             Boolean maximumInclusive
     ) {
-        validate(version, testItem, schoolLevel, gender, minimumAge, maximumAge, grade, minimumValue, maximumValue, minimumInclusive, maximumInclusive);
+        validate(version, testItem, schoolLevel, schoolGrade, gender, minimumAge, maximumAge, grade, minimumValue, maximumValue, minimumInclusive, maximumInclusive);
         this.version = version;
         this.testItem = testItem;
         this.schoolLevel = schoolLevel;
+        this.schoolGrade = schoolGrade;
         this.gender = gender;
         this.minimumAge = minimumAge;
         this.maximumAge = maximumAge;
@@ -112,13 +117,14 @@ public class PapsStandard extends BaseTimeEntity {
             Boolean minimumInclusive,
             Boolean maximumInclusive
     ) {
-        return new PapsStandard(version, testItem, schoolLevel, gender, minimumAge, maximumAge, grade, minimumValue, maximumValue, minimumInclusive, maximumInclusive);
+        return new PapsStandard(version, testItem, schoolLevel, 1, gender, minimumAge, maximumAge, grade, minimumValue, maximumValue, minimumInclusive, maximumInclusive);
     }
 
-    private static void validate(
+    public static PapsStandard create(
             PapsStandardVersion version,
             FitnessTestItem testItem,
             SchoolLevel schoolLevel,
+            Integer schoolGrade,
             Gender gender,
             Integer minimumAge,
             Integer maximumAge,
@@ -128,8 +134,28 @@ public class PapsStandard extends BaseTimeEntity {
             Boolean minimumInclusive,
             Boolean maximumInclusive
     ) {
-        if (version == null || testItem == null || schoolLevel == null || gender == null || minimumAge == null || maximumAge == null || grade == null || minimumInclusive == null || maximumInclusive == null) {
-            throw new IllegalArgumentException("paps standard requires version, testItem, schoolLevel, gender, age range, grade, and inclusive flags");
+        return new PapsStandard(version, testItem, schoolLevel, schoolGrade, gender, minimumAge, maximumAge, grade, minimumValue, maximumValue, minimumInclusive, maximumInclusive);
+    }
+
+    private static void validate(
+            PapsStandardVersion version,
+            FitnessTestItem testItem,
+            SchoolLevel schoolLevel,
+            Integer schoolGrade,
+            Gender gender,
+            Integer minimumAge,
+            Integer maximumAge,
+            Integer grade,
+            BigDecimal minimumValue,
+            BigDecimal maximumValue,
+            Boolean minimumInclusive,
+            Boolean maximumInclusive
+    ) {
+        if (version == null || testItem == null || schoolLevel == null || schoolGrade == null || gender == null || minimumAge == null || maximumAge == null || grade == null || minimumInclusive == null || maximumInclusive == null) {
+            throw new IllegalArgumentException("paps standard requires version, testItem, schoolLevel, schoolGrade, gender, age range, grade, and inclusive flags");
+        }
+        if (schoolGrade < 1 || schoolGrade > 6) {
+            throw new IllegalArgumentException("schoolGrade must be between 1 and 6");
         }
         if (minimumAge < 0 || maximumAge < minimumAge) {
             throw new IllegalArgumentException("age range is invalid");
@@ -156,6 +182,10 @@ public class PapsStandard extends BaseTimeEntity {
 
     public SchoolLevel getSchoolLevel() {
         return schoolLevel;
+    }
+
+    public Integer getSchoolGrade() {
+        return schoolGrade;
     }
 
     public Gender getGender() {
