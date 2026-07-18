@@ -17,7 +17,7 @@ from pose.landmarks import (
     RIGHT_SHOULDER,
     RIGHT_WRIST,
 )
-from pose import pushup, sitreach
+from pose import curlup, pushup
 
 
 def lm(x, y, visibility=1.0):
@@ -115,16 +115,28 @@ def test_pushup_hip_sag_detected():
     assert metrics["reps"][0]["maxHipSagDeg"] >= 20.0
 
 
-def _sitreach_frame(sec, knee_angle_deg, trunk_flexion_deg, reach_distance):
-    hip = (0.0, 0.0)
-    knee_theta = math.radians(knee_angle_deg)
-    knee = (1.0, 0.0)
-    ankle = (1.0 + math.cos(knee_theta), math.sin(knee_theta))
+def _curlup_frame(sec, knee_angle_deg, trunk_lift_deg, neck_pull_deg=0.0):
+    """Build a synthetic curl-up frame with a controlled knee angle, trunk lift, and neck-pull deviation.
 
-    trunk_theta = math.radians(180.0 - trunk_flexion_deg)
-    shoulder = (hip[0] + math.cos(trunk_theta) * -1.0, hip[1] + math.sin(trunk_theta) * -1.0)
+    Knee/hip/ankle are placed so angle_deg(hip, knee, ankle) == knee_angle_deg.
+    Shoulder/hip/knee are placed so (180 - angle_deg(shoulder, hip, knee)) == trunk_lift_deg.
+    Ear/shoulder/hip are placed so line_deviation_deg(ear, shoulder, hip) == neck_pull_deg.
+    """
+    knee = (0.0, 0.0)
+    theta = math.radians(knee_angle_deg)
+    ankle = (math.sin(theta), -math.cos(theta))
 
-    wrist = (ankle[0] - reach_distance, ankle[1])
+    hip = (0.0, -1.0)
+    phi = math.radians(180.0 - trunk_lift_deg)
+    shoulder = (hip[0] + math.sin(phi), hip[1] + math.cos(phi))
+
+    w0 = (math.sin(phi), math.cos(phi))  # opposite of the hip->shoulder direction
+    delta = math.radians(neck_pull_deg)
+    w = (
+        w0[0] * math.cos(delta) - w0[1] * math.sin(delta),
+        w0[0] * math.sin(delta) + w0[1] * math.cos(delta),
+    )
+    ear = (shoulder[0] + w[0], shoulder[1] + w[1])
 
     return Frame(
         sec=sec,
@@ -133,17 +145,35 @@ def _sitreach_frame(sec, knee_angle_deg, trunk_flexion_deg, reach_distance):
             LEFT_HIP: lm(*hip), RIGHT_HIP: lm(*hip),
             LEFT_KNEE: lm(*knee), RIGHT_KNEE: lm(*knee),
             LEFT_ANKLE: lm(*ankle), RIGHT_ANKLE: lm(*ankle),
-            LEFT_WRIST: lm(*wrist),
+            LEFT_EAR: lm(*ear),
         },
     )
 
 
-def test_sitreach_knee_bent_ratio():
+def test_curlup_rep_segmentation_counts_up_phases():
     frames = [
-        _sitreach_frame(0.0, 180.0, 10.0, 0.5),
-        _sitreach_frame(0.5, 140.0, 30.0, 0.2),  # bent knee
-        _sitreach_frame(1.0, 175.0, 40.0, 0.1),
+        _curlup_frame(0.0, 90.0, 5.0),
+        _curlup_frame(0.2, 90.0, 15.0),
+        _curlup_frame(0.4, 90.0, 45.0),   # up phase 1
+        _curlup_frame(0.6, 90.0, 50.0),   # up phase 1
+        _curlup_frame(0.8, 90.0, 15.0),
+        _curlup_frame(1.0, 90.0, 5.0),
+        _curlup_frame(1.2, 90.0, 5.0),
+        _curlup_frame(1.4, 90.0, 15.0),
+        _curlup_frame(1.6, 90.0, 45.0),   # up phase 2
+        _curlup_frame(1.8, 90.0, 5.0),
     ]
-    metrics = sitreach.compute_metrics(frames)
-    assert metrics["minKneeAngleDeg"] <= 141.0
-    assert metrics["kneeBentRatio"] > 0.0
+    metrics = curlup.compute_metrics(frames)
+    assert metrics["repCount"] == 2
+    assert metrics["reps"][0]["maxTrunkLiftDeg"] >= 45.0
+    assert metrics["reps"][1]["maxTrunkLiftDeg"] >= 45.0
+
+
+def test_curlup_neck_pull_and_knee_angle_instability_detected():
+    frames = [
+        _curlup_frame(0.0, 90.0, 5.0, neck_pull_deg=0.0),
+        _curlup_frame(0.2, 170.0, 45.0, neck_pull_deg=25.0),  # knee straightened + neck pulled, up phase
+    ]
+    metrics = curlup.compute_metrics(frames)
+    assert metrics["reps"][0]["maxNeckPullDeg"] >= 20.0
+    assert metrics["kneeAngleStableRatio"] < 1.0

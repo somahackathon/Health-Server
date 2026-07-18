@@ -39,13 +39,12 @@ public class PosturePromptFactory {
             - 반복 횟수(repCount)와 각 반복의 가동범위를 평가합니다.
             """;
 
-    private static final String SIT_AND_REACH_CRITERIA = """
-            [윗몸앞으로굽히기(SIT_AND_REACH) 판정 기준]
-            - 무릎을 편 상태를 유지해야 합니다. 무릎 굽힘(minKneeAngleDeg, kneeBentRatio)이 크면 감점합니다.
-            - 등·허리가 과도하게 말리지 않아야 합니다(maxTrunkFlexionDeg 참고).
-            - 반동(bounceDetected)을 사용하지 않아야 합니다.
-            - 최대 도달 자세를 일정 시간 유지해야 합니다(holdSec).
-            - 좌우 대칭(leftRightAsymmetryDeg)을 평가합니다.
+    private static final String CURL_UP_CRITERIA = """
+            [윗몸일으키기(CURL_UP) 판정 기준]
+            - 무릎을 약 90도로 굽힌 상태를 반복 내내 유지해야 합니다(minKneeAngleDeg, kneeAngleStableRatio).
+            - 상체를 충분히 들어올려야 합니다(maxTrunkLiftDeg가 클수록 완전한 동작).
+            - 손으로 목을 무리하게 잡아당기지 않아야 합니다(maxNeckPullDeg가 크면 목 당김 의심).
+            - 반복 횟수(repCount)와 각 반복이 충분한 가동범위로 이루어졌는지 평가합니다.
             """;
 
     private final ObjectMapper objectMapper;
@@ -59,7 +58,7 @@ public class PosturePromptFactory {
     }
 
     private String buildUserText(ExerciseType exerciseType, PoseExtractionResult poseResult) {
-        String criteria = exerciseType == ExerciseType.PUSH_UP ? PUSH_UP_CRITERIA : SIT_AND_REACH_CRITERIA;
+        String criteria = exerciseType == ExerciseType.PUSH_UP ? PUSH_UP_CRITERIA : CURL_UP_CRITERIA;
         return """
                 %s
                 [분석 대상]

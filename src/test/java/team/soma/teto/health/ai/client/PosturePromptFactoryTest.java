@@ -28,14 +28,14 @@ class PosturePromptFactoryTest {
     }
 
     @Test
-    void buildsSitAndReachPromptWithCriteria() {
+    void buildsCurlUpPromptWithCriteria() {
         PoseExtractionResult poseResult = new PoseExtractionResult(
-                "SIT_AND_REACH", 20.0, 10, true, Map.of("minKneeAngleDeg", 170.0));
+                "CURL_UP", 20.0, 10, true, Map.of("minKneeAngleDeg", 90.0));
 
-        GeminiGenerateRequest request = factory.create(ExerciseType.SIT_AND_REACH, poseResult);
+        GeminiGenerateRequest request = factory.create(ExerciseType.CURL_UP, poseResult);
 
         String userText = request.contents().get(0).parts().get(0).text();
-        assertThat(userText).contains("무릎").contains("반동");
+        assertThat(userText).contains("무릎").contains("목");
     }
 
     @Test

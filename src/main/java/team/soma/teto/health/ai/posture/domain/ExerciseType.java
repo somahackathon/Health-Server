@@ -5,7 +5,7 @@ import team.soma.teto.health.global.error.BusinessException;
 
 public enum ExerciseType {
     PUSH_UP,
-    SIT_AND_REACH;
+    CURL_UP;
 
     public static ExerciseType from(String value) {
         if (value == null) {

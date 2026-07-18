@@ -1,6 +1,6 @@
 # ai-python — 자세 분석 관절 추출 서버
 
-Spring 서버가 자세 분석 영상(팔굽혀펴기/윗몸앞으로굽히기)을 전달하면 MediaPipe Pose로
+Spring 서버가 자세 분석 영상(팔굽혀펴기/윗몸일으키기)을 전달하면 MediaPipe Pose로
 관절 좌표를 추출하고, 종목별 각도·정렬 지표(metrics)를 계산해 반환하는 내부 서브서버입니다.
 
 이 서버는 Gemini API 키를 갖지 않습니다. LLM 분석/문장 생성은 Spring이 담당하고,
@@ -32,7 +32,7 @@ pytest
 ### POST /pose/extract (multipart/form-data)
 
 - `video`: 영상 파일 (mp4/mov)
-- `exerciseType`: `PUSH_UP` | `SIT_AND_REACH`
+- `exerciseType`: `PUSH_UP` | `CURL_UP`
 
 성공 200 응답 예시는 `docs/ai-contract.md`를 참고하세요.
 
