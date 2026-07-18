@@ -1,3 +1,5 @@
+PR title rule: keep the Conventional Commit type prefix and write the summary in Korean.
+
 ## 작업 목적
 
 ## 주요 변경사항

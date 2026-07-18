@@ -13,6 +13,7 @@ This project is the Spring Boot backend for a React Native local-first PAPS fitn
 
 ## Important Constraints
 
+- Write PR titles in Korean while keeping the Conventional Commit type prefix.
 - Do not add signup, login, Spring Security, JWT, OAuth, Redis, Kafka, API Gateway, or MSA structure without an explicit product decision.
 - Do not store long-term user records, analysis history, raw videos, or video paths in MariaDB.
 - Treat the RN app SQLite database as the source of truth for user-owned data.

@@ -131,7 +131,8 @@ Use Conventional Commit titles with these types only:
 - `ci`
 - `build`
 
-PR titles must use the same format. PR bodies must be written in Korean and include:
+PR titles must use the Conventional Commit format and write the summary in Korean, for example `docs: AI 에이전트 개발 하네스 추가`.
+PR bodies must be written in Korean and include:
 
 - `## 작업 내용`
 - `## 주요 변경사항`
