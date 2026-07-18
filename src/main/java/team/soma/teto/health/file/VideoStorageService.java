@@ -41,7 +41,7 @@ public class VideoStorageService {
         try {
             Files.deleteIfExists(path);
         } catch (IOException exception) {
-            log.warn("failed to delete temporary video file: {}", path, exception);
+            log.warn("failed to delete temporary video file, exceptionType={}", exception.getClass().getSimpleName());
         }
     }
 

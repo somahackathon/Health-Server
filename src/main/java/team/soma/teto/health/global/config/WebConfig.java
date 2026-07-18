@@ -5,10 +5,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import team.soma.teto.health.ai.client.AiProperties;
+import team.soma.teto.health.analysis.job.application.AnalysisCleanupProperties;
 import team.soma.teto.health.file.VideoProperties;
 
 @Configuration
-@EnableConfigurationProperties({CorsProperties.class, VideoProperties.class})
+@EnableConfigurationProperties({CorsProperties.class, VideoProperties.class, AiProperties.class, AnalysisCleanupProperties.class})
 public class WebConfig implements WebMvcConfigurer {
 
     private final CorsProperties corsProperties;

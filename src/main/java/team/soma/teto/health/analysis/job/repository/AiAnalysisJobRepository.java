@@ -26,9 +26,16 @@ public interface AiAnalysisJobRepository extends JpaRepository<AiAnalysisJob, Lo
               and job.status in :statuses
             order by job.expiresAt asc
             """)
-    List<AiAnalysisJob> findExpiredJobsByStatuses(@Param("statuses") List<AnalysisStatus> statuses, @Param("now") Instant now);
+    List<AiAnalysisJob> findExpiredJobsByStatuses(@Param("statuses") List<AnalysisStatus> statuses, @Param("now") Instant now, Pageable pageable);
 
-    List<AiAnalysisJob> findAllByExpiresAtBefore(Instant expiresAt);
+    @Query("""
+            select job
+            from AiAnalysisJob job
+            where job.expiresAt < :now
+              and (job.requestPayload is not null or job.resultPayload is not null)
+            order by job.expiresAt asc
+            """)
+    List<AiAnalysisJob> findExpiredJobsWithPayloads(@Param("now") Instant now, Pageable pageable);
 
     List<AiAnalysisJob> findAllByInstallationHashOrderByCreatedAtDesc(String installationHash, Pageable pageable);
 }

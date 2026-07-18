@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,12 @@ public class AiAnalysisJobService {
 
     private final AiAnalysisJobRepository aiAnalysisJobRepository;
     private final Clock clock;
+    private final AnalysisCleanupProperties cleanupProperties;
 
-    public AiAnalysisJobService(AiAnalysisJobRepository aiAnalysisJobRepository, Clock clock) {
+    public AiAnalysisJobService(AiAnalysisJobRepository aiAnalysisJobRepository, Clock clock, AnalysisCleanupProperties cleanupProperties) {
         this.aiAnalysisJobRepository = aiAnalysisJobRepository;
         this.clock = clock;
+        this.cleanupProperties = cleanupProperties;
     }
 
     @Transactional
@@ -61,14 +64,56 @@ public class AiAnalysisJobService {
     @Transactional
     public AnalysisJobCleanupResult cleanupExpiredJobs() {
         Instant now = Instant.now(clock);
+        Pageable batch = PageRequest.of(0, cleanupProperties.getCleanupBatchSize());
 
-        List<AiAnalysisJob> overdueActiveJobs = aiAnalysisJobRepository.findExpiredJobsByStatuses(
-                List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING), now);
-        overdueActiveJobs.forEach(job -> job.expire(now));
+        int expiredJobCount = 0;
+        while (true) {
+            List<AiAnalysisJob> overdueActiveJobs = aiAnalysisJobRepository.findExpiredJobsByStatuses(
+                    List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING), now, batch);
+            if (overdueActiveJobs.isEmpty()) {
+                break;
+            }
+            for (AiAnalysisJob job : overdueActiveJobs) {
+                if (expireJob(job, now)) {
+                    expiredJobCount++;
+                }
+            }
+        }
 
-        List<AiAnalysisJob> expiredJobs = aiAnalysisJobRepository.findAllByExpiresAtBefore(now);
-        expiredJobs.forEach(job -> job.clearExpiredPayloads(now));
+        int payloadsPurgedCount = 0;
+        while (true) {
+            List<AiAnalysisJob> expiredJobs = aiAnalysisJobRepository.findExpiredJobsWithPayloads(now, batch);
+            if (expiredJobs.isEmpty()) {
+                break;
+            }
+            int purgedInBatch = 0;
+            for (AiAnalysisJob job : expiredJobs) {
+                if (clearPayload(job, now)) {
+                    payloadsPurgedCount++;
+                    purgedInBatch++;
+                }
+            }
+            if (purgedInBatch == 0) {
+                break;
+            }
+        }
 
-        return new AnalysisJobCleanupResult(overdueActiveJobs.size(), expiredJobs.size());
+        return new AnalysisJobCleanupResult(expiredJobCount, payloadsPurgedCount);
+    }
+
+    private boolean expireJob(AiAnalysisJob job, Instant now) {
+        try {
+            job.expire(now);
+            return true;
+        } catch (IllegalStateException exception) {
+            return false;
+        }
+    }
+
+    private boolean clearPayload(AiAnalysisJob job, Instant now) {
+        String requestPayload = job.getRequestPayload();
+        String resultPayload = job.getResultPayload();
+        job.clearExpiredPayloads(now);
+        return requestPayload != null || resultPayload != null;
     }
 }

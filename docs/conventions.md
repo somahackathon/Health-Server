@@ -55,6 +55,7 @@ global/validation
 - URI paths use lowercase kebab-case.
 - JSON fields use lower camelCase.
 - Correlation IDs use `X-Correlation-Id`.
+- Client installation IDs use `X-Installation-Id` and are hashed by the server before storage.
 - Do not encode business version assumptions only in URI paths; use explicit version fields where standards or AI models require them.
 
 ## ENUM Rules
@@ -79,13 +80,12 @@ global/validation
 - Test names should describe behavior.
 - Unit tests cover policies, mappers, and error behavior.
 - Web tests cover validation, response shape, and HTTP status.
-- Integration tests that need external systems must be profile-gated or use test infrastructure.
+- Integration tests that need external systems must use local test infrastructure such as Testcontainers or a test HTTP server.
 
 ## Git and PR
 
 - Branch one task per PR.
 - Use Conventional Commit titles.
 - Keep commits focused on one logical change.
-- PR bodies are written in Korean with 작업 내용, 주요 변경사항, 테스트, 확인이 필요한 사항.
+- PR bodies are written in Korean and include `## 작업 내용`, `## 주요 변경사항`, `## 테스트`, and `## 확인이 필요한 사항`.
 - Do not create stacked PRs unless explicitly requested.
-

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,15 @@ public class TempVideoCleanupScheduler {
         }
         Instant staleBefore = Instant.now(clock).minus(videoProperties.getStaleAfter());
         try (Stream<Path> files = Files.list(tempDir)) {
+            AtomicInteger deletedCount = new AtomicInteger();
             files.filter(Files::isRegularFile)
                     .filter(path -> isStale(path, staleBefore))
-                    .forEach(this::deleteQuietly);
+                    .forEach(path -> deleteQuietly(path, deletedCount));
+            if (deletedCount.get() > 0) {
+                log.info("deleted stale temp video files, count={}", deletedCount.get());
+            }
         } catch (IOException exception) {
-            log.warn("failed to scan temp video directory: {}", tempDir, exception);
+            log.warn("failed to scan temp video directory, exceptionType={}", exception.getClass().getSimpleName());
         }
     }
 
@@ -48,12 +53,12 @@ public class TempVideoCleanupScheduler {
         }
     }
 
-    private void deleteQuietly(Path path) {
+    private void deleteQuietly(Path path, AtomicInteger deletedCount) {
         try {
             Files.deleteIfExists(path);
-            log.info("deleted stale temp video file: {}", path);
+            deletedCount.incrementAndGet();
         } catch (IOException exception) {
-            log.warn("failed to delete stale temp video file: {}", path, exception);
+            log.warn("failed to delete stale temp video file, exceptionType={}", exception.getClass().getSimpleName());
         }
     }
 }
