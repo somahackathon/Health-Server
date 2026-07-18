@@ -11,8 +11,10 @@ The RN app calls Spring with `X-Installation-Id`. This is an installation UUID, 
 
 ## Runtime Modes
 
-- `AI_MODE=mock`: use in local/test when no AI server is available.
+- `AI_MODE=mock`: use mock clients.
 - `AI_MODE=real`: use HTTP clients. `AI_BASE_URL` is required.
+- `AI_FITNESS_MODE`: optional override for fitness analysis.
+- `AI_POSTURE_MODE`: optional override for posture analysis.
 
 Timeouts:
 
@@ -95,22 +97,20 @@ Transport:
 
 Parts:
 
-- `metadata`: JSON `PostureAnalysisAiRequest`
+- `exerciseType`: text, for example `PUSH_UP` or `SIT_AND_REACH`
 - `video`: binary video file
 
 Spring-generated multipart filenames are safe placeholders. Original client filenames are not forwarded.
 
-Metadata:
+The included `ai-python` FastAPI service endpoint is `/pose/extract`. It extracts pose metrics and returns metric JSON. Spring adapts that metric response to the existing posture analysis response DTO.
 
 ```json
 {
-  "correlationId": "uuid",
-  "modelVersion": null,
   "exerciseType": "SQUAT",
-  "video": {
-    "contentType": "video/mp4",
-    "sizeBytes": 1234
-  }
+  "durationSec": 1.2,
+  "sampledFps": 10,
+  "personDetected": true,
+  "metrics": {}
 }
 ```
 

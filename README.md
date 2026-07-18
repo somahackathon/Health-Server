@@ -66,7 +66,28 @@ AI mode is configured through `AI_MODE`:
 - `mock`: local/test mock clients.
 - `real`: HTTP clients using `AI_BASE_URL`, `AI_API_KEY`, timeout, path, and retry settings.
 
-Fitness AI requests are JSON. Posture AI requests are forwarded as `multipart/form-data` with `metadata` JSON and `video` binary parts. Original video filenames and temp paths are not sent to the client.
+`AI_FITNESS_MODE` and `AI_POSTURE_MODE` can override each feature independently. For Cloudtype deployment with the included FastAPI posture service, use `AI_FITNESS_MODE=mock`, `AI_POSTURE_MODE=real`, and `AI_POSTURE_PATH=/pose/extract`.
+
+Fitness AI requests are JSON. Posture AI requests are forwarded to `ai-python` as `multipart/form-data` with `exerciseType` and `video` parts. Original video filenames and temp paths are not sent to the client.
+
+## Cloudtype Deployment
+
+Deploy two services from this repository:
+
+- Spring Boot service from the repository root.
+- FastAPI posture service from `ai-python` using `ai-python/Dockerfile`.
+
+Spring service environment example:
+
+```env
+AI_MODE=mock
+AI_FITNESS_MODE=mock
+AI_POSTURE_MODE=real
+AI_BASE_URL=https://<ai-python-service-url>
+AI_POSTURE_PATH=/pose/extract
+```
+
+The FastAPI service exposes `GET /health` and `POST /pose/extract`.
 
 ## Environment Variables
 

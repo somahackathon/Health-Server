@@ -7,6 +7,8 @@ springdoc:
 app:
   ai:
     mode: ${AI_MODE:mock}
+    fitness-mode: ${AI_FITNESS_MODE:${AI_MODE:mock}}
+    posture-mode: ${AI_POSTURE_MODE:${AI_MODE:mock}}
   time:
     storage-zone: UTC
   cors:

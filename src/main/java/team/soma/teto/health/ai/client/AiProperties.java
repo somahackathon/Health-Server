@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AiProperties {
 
     private Mode mode = Mode.REAL;
+    private Mode fitnessMode;
+    private Mode postureMode;
     private URI baseUrl;
     private String apiKey;
     private Duration connectTimeout = Duration.ofSeconds(3);
@@ -22,6 +24,22 @@ public class AiProperties {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    public Mode getFitnessMode() {
+        return fitnessMode;
+    }
+
+    public void setFitnessMode(Mode fitnessMode) {
+        this.fitnessMode = fitnessMode;
+    }
+
+    public Mode getPostureMode() {
+        return postureMode;
+    }
+
+    public void setPostureMode(Mode postureMode) {
+        this.postureMode = postureMode;
     }
 
     public URI getBaseUrl() {
