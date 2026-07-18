@@ -12,6 +12,8 @@ spring:
 app:
   ai:
     mode: mock
+    fitness-mode: mock
+    posture-mode: mock
   analysis:
     cleanup-batch-size: 2
   video:

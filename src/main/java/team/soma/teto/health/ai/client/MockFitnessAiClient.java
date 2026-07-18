@@ -1,14 +1,14 @@
 package team.soma.teto.health.ai.client;
 
 import java.util.List;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.FitnessAnalysisAiRequest;
 import team.soma.teto.health.ai.dto.FitnessAnalysisAiResponse;
 import team.soma.teto.health.ai.dto.FitnessAnalysisAiResponse.Recommendation;
 
 @Component
-@ConditionalOnProperty(prefix = "app.ai", name = "mode", havingValue = "mock")
+@ConditionalOnExpression("'${app.ai.fitness-mode:real}'.equalsIgnoreCase('mock')")
 public class MockFitnessAiClient implements FitnessAiClient {
 
     private static final String MOCK_MODEL_VERSION = "mock-fitness-v1";

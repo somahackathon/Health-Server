@@ -50,6 +50,8 @@ class HttpAiClientTest {
     @DynamicPropertySource
     static void aiProperties(DynamicPropertyRegistry registry) {
         registry.add("app.ai.mode", () -> "real");
+        registry.add("app.ai.fitness-mode", () -> "real");
+        registry.add("app.ai.posture-mode", () -> "real");
         registry.add("app.ai.base-url", () -> "http://localhost:" + server.getAddress().getPort() + "/");
         registry.add("app.ai.api-key", () -> "test-api-key");
         registry.add("app.ai.fitness-path", () -> "/fitness");
@@ -93,9 +95,10 @@ class HttpAiClientTest {
 
         PostureAnalysisAiResponse response = postureAiClient.analyze(request, video);
 
-        assertThat(response.modelVersion()).isEqualTo("http-posture-v1");
+        assertThat(response.modelVersion()).isEqualTo("ai-python-pose-v1");
         assertThat(postureContentType.get()).contains("multipart/form-data");
-        assertThat(postureBody.get()).contains("name=\"metadata\"");
+        assertThat(postureBody.get()).contains("name=\"exerciseType\"");
+        assertThat(postureBody.get()).contains("SQUAT");
         assertThat(postureBody.get()).contains("name=\"video\"");
         assertThat(postureBody.get()).contains("fake-video-bytes");
         assertThat(postureBody.get()).doesNotContain(video.getFileName().toString());
@@ -157,16 +160,13 @@ class HttpAiClientTest {
         postureBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
         respond(exchange, 200, """
                 {
-                  "correlationId": "corr-posture",
-                  "modelVersion": "http-posture-v1",
-                  "status": "COMPLETED",
-                  "feedback": [
-                    {
-                      "code": "KNEE_ALIGNMENT",
-                      "message": "ok",
-                      "severity": "LOW"
-                    }
-                  ]
+                  "exerciseType": "SQUAT",
+                  "durationSec": 1.2,
+                  "sampledFps": 10,
+                  "personDetected": true,
+                  "metrics": {
+                    "repCount": 1
+                  }
                 }
                 """);
     }

@@ -1,13 +1,13 @@
 package team.soma.teto.health.ai.client;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.FitnessAnalysisAiRequest;
 import team.soma.teto.health.ai.dto.FitnessAnalysisAiResponse;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
-@ConditionalOnProperty(prefix = "app.ai", name = "mode", havingValue = "real", matchIfMissing = true)
+@ConditionalOnExpression("'${app.ai.fitness-mode:real}'.equalsIgnoreCase('real')")
 public class HttpFitnessAiClient extends HttpAiClientSupport implements FitnessAiClient {
 
     private final AiProperties aiProperties;
