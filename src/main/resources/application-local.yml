@@ -5,6 +5,8 @@ springdoc:
     enabled: true
 
 app:
+  ai:
+    mode: ${AI_MODE:mock}
   time:
     storage-zone: UTC
   cors:

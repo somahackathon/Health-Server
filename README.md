@@ -1,112 +1,81 @@
 # Health Server
 
-AI 기반 PAPS 체력 관리 서비스의 Spring Boot 백엔드 서버입니다.
+AI-assisted PAPS fitness management service backend for a React Native app.
 
-React Native 앱은 학생의 생년월일, 성별, 키, 체중, PAPS 측정 기록과 분석 이력을 로컬 SQLite에 저장합니다. 서버는 요청 검증, PAPS 판정, AI 서버 연동, 임시 영상 전달을 담당하며 사용자의 장기 데이터를 영구 저장하지 않습니다.
+## Architecture
 
-## 주요 기능
+- React Native stores user profile, PAPS history, AI results, and exercise solutions in local SQLite.
+- Spring Boot validates requests, evaluates PAPS records from versioned standards, forwards AI requests, and manages temporary analysis jobs.
+- MariaDB stores PAPS reference data, PAPS standard metadata/ranges, and temporary AI job state.
+- The server does not provide signup, login, Spring Security, JWT, Redis, Kafka, API Gateway, or MSA.
+- Raw posture videos are temporary files and are deleted after analysis success or failure.
 
-- PAPS 측정 요청 검증
-- 버전이 있는 PAPS 기준 데이터 기반 판정
-- 체력 분석 AI 서버 연동
-- 자세 영상 분석 AI 서버 연동
-- 분석 작업 상태 관리
-- 임시 영상 삭제 정책 적용
-
-현재 저장소는 초기 Spring Boot 프로젝트 상태이며, 위 기능은 단계적으로 구현 예정입니다.
-
-## 전체 아키텍처
-
-```text
-React Native App
-  - user profile
-  - PAPS records
-  - analysis history
-  - SQLite source of truth
-
-Spring Boot Server
-  - validation
-  - PAPS evaluation
-  - AI API integration
-  - temporary video forwarding
-
-MariaDB
-  - PAPS reference data
-  - standard versions
-  - AI job state
-
-AI Servers
-  - fitness analysis
-  - posture analysis
-```
-
-## 기술 스택
+## Runtime
 
 - Java 21
 - Spring Boot 4.1.0
 - Gradle Groovy DSL
-- Spring Web MVC
-- Spring Data JPA
-- MariaDB JDBC Driver
-- MySQL JDBC Driver
-- JUnit 5
-- Lombok
+- MariaDB or MySQL
+- Flyway
 
-## 로컬 실행
-
-```powershell
-.\gradlew.bat bootRun
-```
-
-현재 기본 설정에는 실제 DB 접속 정보가 포함되어 있지 않습니다. 로컬 DB 설정은 환경변수와 profile 설정으로 분리해 추가해야 합니다.
-
-## 환경변수
-
-아직 운영용 환경변수 계약은 확정되지 않았습니다. 향후 DB와 AI 서버 연동이 추가되면 다음 성격의 값은 저장소에 커밋하지 말고 환경변수 또는 배포 환경의 secret으로 주입합니다.
-
-- MariaDB URL
-- MariaDB 사용자명
-- MariaDB 비밀번호
-- AI 서버 base URL
-- AI 서버 인증 토큰이 도입되는 경우 해당 토큰
-
-## 테스트
+## Local Commands
 
 ```powershell
 .\gradlew.bat test
 .\gradlew.bat build
 ```
 
-## 프로젝트 구조
+Run locally with explicit environment variables:
 
-기본 패키지는 `team.soma.teto.health`입니다.
-
-```text
-src/main/java/team/soma/teto/health
-├── reference
-├── evaluation
-├── analysis
-├── ai
-├── file
-└── global
+```powershell
+$env:SPRING_PROFILES_ACTIVE='local'
+$env:DB_URL='jdbc:mariadb://localhost:3306/health'
+$env:DB_USERNAME='health'
+$env:DB_PASSWORD='change-me'
+$env:AI_MODE='mock'
+.\gradlew.bat bootRun
 ```
 
-## 팀별 연동 관계
+## PAPS Reference API
 
-- RN 앱 팀: 사용자 입력, 로컬 SQLite 저장, 결과 표시를 담당합니다.
-- Spring 서버 팀: 요청 검증, 기준 판정, AI 연동, 임시 영상 처리 정책을 담당합니다.
-- AI 팀: 체력 분석과 자세 분석 API를 제공합니다.
+- `GET /api/v1/paps/components`
+- `GET /api/v1/paps/test-items`
+- `GET /api/v1/paps/test-items?component={componentCode}`
+- `GET /api/v1/paps/standards/current`
 
-AI API 계약은 `docs/ai-contract.md`에서 관리합니다.
+Only active components, active test items, and the single active standard version are returned. Entity IDs are not exposed.
 
-## 데이터 저장 정책
+## PAPS Evaluation API
 
-- RN SQLite: 사용자 프로필, PAPS 기록, 분석 이력의 원본입니다.
-- MariaDB: PAPS 종목, 기준치, 기준 버전, 서버 공통 데이터, AI 분석 작업 상태만 저장합니다.
-- 서버 파일시스템: 자세 분석 중 필요한 영상만 임시 저장할 수 있으며 성공 또는 실패 후 삭제해야 합니다.
-- 저장 금지: 장기 사용자 기록, raw 영상, 영상 경로, 민감정보, 의료 진단성 데이터.
+- `POST /api/v1/paps/evaluations`
 
-## 현재 개발 상태
+The server validates profile and measurement inputs, calculates age from `assessmentDate`, calculates BMI from height and weight, and evaluates item-level grades from `PapsStandard` ranges. Requests and results are not stored in MariaDB.
 
-초기 프로젝트 세팅 단계입니다. 비즈니스 도메인, API, DB migration, AI 실제 연동, 파일 업로드 기능은 아직 구현되지 않았습니다.
+Current blocker: the repository contains `HACKATHON_V1` metadata and PAPS items, but no verified `paps_standard` range rows. Real evaluation requests cannot return grades from Seed Data until official criteria or team-approved internal criteria are added.
 
+## AI Analysis APIs
+
+All analysis APIs require `X-Installation-Id`, a client installation UUID. The server hashes this value with SHA-256 and stores only the hash.
+
+- `POST /api/fitness-analyses`
+- `POST /api/posture-analyses`
+- `GET /api/analysis-jobs/{publicId}`
+
+AI mode is configured through `AI_MODE`:
+
+- `mock`: local/test mock clients.
+- `real`: HTTP clients using `AI_BASE_URL`, `AI_API_KEY`, timeout, path, and retry settings.
+
+Fitness AI requests are JSON. Posture AI requests are forwarded as `multipart/form-data` with `metadata` JSON and `video` binary parts. Original video filenames and temp paths are not sent to the client.
+
+## Environment Variables
+
+See `.env.example`. Do not commit real DB passwords, AI API keys, production URLs, or local `.env` files.
+
+## OpenAPI
+
+OpenAPI is disabled by default. Enable it locally with:
+
+```powershell
+$env:OPENAPI_ENABLED='true'
+```

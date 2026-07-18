@@ -1,8 +1,8 @@
 package team.soma.teto.health.global.error;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import team.soma.teto.health.global.config.CorrelationIdFilter;
@@ -70,6 +71,14 @@ class GlobalExceptionHandlerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.error.code").value("COMMON_INVALID_JSON"));
+    }
+
+    @Test
+    void returnMissingHeaderAsBadRequest() throws Exception {
+        mockMvc.perform(get("/test/global/required-header"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("COMMON_INVALID_INPUT"))
+                .andExpect(jsonPath("$.error.details[0].field").value("X-Test-Header"));
     }
 
     @Test
@@ -130,6 +139,10 @@ class GlobalExceptionHandlerTest {
 
         @PostMapping("/validation")
         void validation(@Valid @RequestBody TestRequest request) {
+        }
+
+        @GetMapping("/required-header")
+        void requiredHeader(@RequestHeader("X-Test-Header") String ignored) {
         }
 
         @GetMapping("/internal-error")

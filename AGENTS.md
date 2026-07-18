@@ -28,6 +28,7 @@ This repository is the Spring Boot backend for an AI-assisted PAPS fitness manag
 - No permanent storage of user fitness history or posture videos.
 - No MSA, Kafka, Redis, API Gateway, or distributed architecture by default.
 - No business rules should be finalized from unclear requirements.
+- Persistent server entities are limited to PAPS reference data and temporary AI analysis jobs unless the product direction explicitly changes.
 
 ## Package Structure
 
