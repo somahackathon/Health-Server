@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import team.soma.teto.health.reference.standard.domain.Gender;
+import team.soma.teto.health.reference.standard.domain.SchoolLevel;
 import team.soma.teto.health.reference.testitem.domain.FitnessTestItemCode;
 import team.soma.teto.health.reference.testitem.domain.MeasurementUnit;
 
@@ -17,13 +18,18 @@ public record FitnessAnalysisAiRequest(
     public record Profile(
             LocalDate birthDate,
             Gender gender,
+            SchoolLevel schoolLevel,
             Integer schoolGrade,
             double heightCm,
             double weightKg
     ) {
 
         public Profile(LocalDate birthDate, Gender gender, double heightCm, double weightKg) {
-            this(birthDate, gender, 1, heightCm, weightKg);
+            this(birthDate, gender, SchoolLevel.HIGH, 1, heightCm, weightKg);
+        }
+
+        public Profile(LocalDate birthDate, Gender gender, Integer schoolGrade, double heightCm, double weightKg) {
+            this(birthDate, gender, SchoolLevel.HIGH, schoolGrade, heightCm, weightKg);
         }
     }
 

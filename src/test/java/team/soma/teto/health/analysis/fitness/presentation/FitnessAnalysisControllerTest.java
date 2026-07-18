@@ -40,6 +40,7 @@ class FitnessAnalysisControllerTest {
                   "profile": {
                     "birthDate": "2010-05-01",
                     "gender": "MALE",
+                    "schoolLevel": "HIGH",
                     "schoolGrade": 1,
                     "heightCm": 170.5,
                     "weightKg": 60.2
@@ -89,6 +90,7 @@ class FitnessAnalysisControllerTest {
                   "profile": {
                     "birthDate": "2010-05-01",
                     "gender": "MALE",
+                    "schoolLevel": "HIGH",
                     "schoolGrade": 1,
                     "heightCm": -1,
                     "weightKg": 60.2
@@ -114,6 +116,7 @@ class FitnessAnalysisControllerTest {
                                   "profile": {
                                     "birthDate": "2010-05-01",
                                     "gender": "MALE",
+                                    "schoolLevel": "HIGH",
                                     "schoolGrade": 1,
                                     "heightCm": 170.5,
                                     "weightKg": 60.2
@@ -142,6 +145,7 @@ class FitnessAnalysisControllerTest {
                                   "profile": {
                                     "birthDate": "2010-05-01",
                                     "gender": "MALE",
+                                    "schoolLevel": "HIGH",
                                     "schoolGrade": 1,
                                     "heightCm": 170.5,
                                     "weightKg": 60.2

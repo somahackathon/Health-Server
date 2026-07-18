@@ -53,6 +53,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
@@ -70,6 +71,7 @@ class PapsEvaluationControllerTest {
                 .andExpect(jsonPath("$.error").value(nullValue()))
                 .andExpect(jsonPath("$.data.standardVersion.code").value("HACKATHON_V1"))
                 .andExpect(jsonPath("$.data.profile.age").value(17))
+                .andExpect(jsonPath("$.data.profile.schoolLevel").value("HIGH"))
                 .andExpect(jsonPath("$.data.profile.schoolGrade").value(1))
                 .andExpect(jsonPath("$.data.profile.bmi").value(21.3))
                 .andExpect(jsonPath("$.data.completeness.complete").value(true))
@@ -85,6 +87,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": null,
                                   "gender": "MALE",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
@@ -105,6 +108,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "UNKNOWN",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
@@ -125,6 +129,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2099-07-18",
                                   "heightCm": 175.2,
@@ -138,6 +143,27 @@ class PapsEvaluationControllerTest {
     }
 
     @Test
+    void returnBeanValidationErrorForInvalidSchoolGradeRange() throws Exception {
+        mockMvc.perform(post("/api/v1/paps/evaluations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "birthDate": "2009-02-24",
+                                  "gender": "MALE",
+                                  "schoolLevel": "HIGH",
+                                  "schoolGrade": 4,
+                                  "assessmentDate": "2026-07-18",
+                                  "heightCm": 175.2,
+                                  "weightKg": 65.4,
+                                  "measurements": [{"testItemCode": "SHUTTLE_RUN", "value": 52}]
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("COMMON_INVALID_INPUT"));
+    }
+
+    @Test
     void returnDuplicateTestItemError() throws Exception {
         mockMvc.perform(post("/api/v1/paps/evaluations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -145,6 +171,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,
@@ -168,6 +195,7 @@ class PapsEvaluationControllerTest {
                                 {
                                   "birthDate": "2009-02-24",
                                   "gender": "MALE",
+                                  "schoolLevel": "HIGH",
                                   "schoolGrade": 1,
                                   "assessmentDate": "2026-07-18",
                                   "heightCm": 175.2,

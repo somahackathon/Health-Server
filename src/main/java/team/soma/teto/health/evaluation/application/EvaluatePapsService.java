@@ -18,7 +18,6 @@ import team.soma.teto.health.evaluation.domain.MeasurementValueValidator;
 import team.soma.teto.health.evaluation.domain.PapsEvaluationErrorCode;
 import team.soma.teto.health.evaluation.domain.PapsGradeEvaluator;
 import team.soma.teto.health.evaluation.domain.PapsMeasurementValue;
-import team.soma.teto.health.evaluation.domain.SchoolLevelPolicy;
 import team.soma.teto.health.evaluation.presentation.PapsEvaluationCompletenessResponse;
 import team.soma.teto.health.evaluation.presentation.PapsEvaluationProfileResponse;
 import team.soma.teto.health.evaluation.presentation.PapsEvaluationRequest;
@@ -56,7 +55,6 @@ public class EvaluatePapsService {
     private final Clock clock;
     private final AgeCalculator ageCalculator = new AgeCalculator();
     private final BmiCalculator bmiCalculator = new BmiCalculator();
-    private final SchoolLevelPolicy schoolLevelPolicy = new SchoolLevelPolicy();
     private final MeasurementValueValidator measurementValueValidator = new MeasurementValueValidator();
     private final PapsGradeEvaluator papsGradeEvaluator = new PapsGradeEvaluator();
 
@@ -78,7 +76,7 @@ public class EvaluatePapsService {
         validateMeasurements(request.measurements());
 
         int age = ageCalculator.calculate(request.birthDate(), request.assessmentDate());
-        SchoolLevel schoolLevel = schoolLevelPolicy.resolve();
+        SchoolLevel schoolLevel = request.schoolLevel();
         PapsStandardVersion standardVersion = getCurrentStandardVersion();
         BigDecimal bmi = bmiCalculator.calculate(request.heightCm(), request.weightKg());
 

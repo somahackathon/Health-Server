@@ -53,6 +53,7 @@ class EvaluatePapsServiceTest {
         assertThat(response.standardVersion().official()).isFalse();
         assertThat(response.profile().age()).isEqualTo(17);
         assertThat(response.profile().schoolLevel()).isEqualTo("HIGH");
+        assertThat(response.profile().schoolGrade()).isEqualTo(1);
         assertThat(response.profile().bmi()).isEqualByComparingTo("21.3");
         assertThat(response.completeness().complete()).isTrue();
         assertThat(response.completeness().evaluatedComponentCount()).isEqualTo(5);
@@ -241,7 +242,7 @@ class EvaluatePapsServiceTest {
     }
 
     @Test
-    void useOnlyMatchingVersionSchoolGenderAndAgeStandards() {
+    void useOnlyMatchingVersionSchoolLevelGradeAndGenderStandards() {
         FitnessTestItem item = fitnessTestItemRepository.findByCode(FitnessTestItemCode.SHUTTLE_RUN).orElseThrow();
         FitnessTestItem bmiItem = fitnessTestItemRepository.findByCode(FitnessTestItemCode.BMI).orElseThrow();
         PapsStandardVersion activeVersion = papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow();
@@ -251,18 +252,46 @@ class EvaluatePapsServiceTest {
         papsStandardRepository.save(PapsStandard.create(inactiveVersion, item, SchoolLevel.HIGH, Gender.MALE, 0, 99, 1, null, null, true, true));
         papsStandardRepository.save(PapsStandard.create(activeVersion, item, SchoolLevel.MIDDLE, Gender.MALE, 0, 99, 2, null, null, true, true));
         papsStandardRepository.save(PapsStandard.create(activeVersion, item, SchoolLevel.HIGH, Gender.FEMALE, 0, 99, 4, null, null, true, true));
-        papsStandardRepository.save(PapsStandard.create(activeVersion, item, SchoolLevel.HIGH, Gender.MALE, 17, 17, 3, null, null, true, true));
-        papsStandardRepository.save(PapsStandard.create(activeVersion, bmiItem, SchoolLevel.HIGH, Gender.MALE, 17, 17, 2, null, null, true, true));
+        papsStandardRepository.save(PapsStandard.create(activeVersion, item, SchoolLevel.HIGH, 2, Gender.MALE, 0, 99, 5, null, null, true, true));
+        papsStandardRepository.save(PapsStandard.create(activeVersion, item, SchoolLevel.HIGH, 1, Gender.MALE, 0, 99, 3, null, null, true, true));
+        papsStandardRepository.save(PapsStandard.create(activeVersion, bmiItem, SchoolLevel.HIGH, 1, Gender.MALE, 0, 99, 2, null, null, true, true));
 
         PapsEvaluationResponse response = evaluatePapsService.evaluate(new PapsEvaluationRequest(
                 LocalDate.of(2009, 2, 24),
                 Gender.MALE,
+                SchoolLevel.HIGH,
+                1,
                 LocalDate.of(2026, 7, 18),
                 new BigDecimal("175.2"),
                 new BigDecimal("65.4"),
                 List.of(new PapsMeasurementRequest(FitnessTestItemCode.SHUTTLE_RUN, new BigDecimal("52")))
         ));
 
+        assertThat(response.measurements().get(0).grade()).isEqualTo(3);
+    }
+
+    @Test
+    void evaluatesMiddleSchoolRequestWithMiddleSchoolGradeStandards() {
+        FitnessTestItem item = fitnessTestItemRepository.findByCode(FitnessTestItemCode.SHUTTLE_RUN).orElseThrow();
+        FitnessTestItem bmiItem = fitnessTestItemRepository.findByCode(FitnessTestItemCode.BMI).orElseThrow();
+        PapsStandardVersion version = papsStandardVersionRepository.findByCode("HACKATHON_V1").orElseThrow();
+        papsStandardRepository.save(PapsStandard.create(version, item, SchoolLevel.HIGH, 1, Gender.MALE, 0, 99, 4, null, null, true, true));
+        papsStandardRepository.save(PapsStandard.create(version, item, SchoolLevel.MIDDLE, 2, Gender.MALE, 0, 99, 3, null, null, true, true));
+        papsStandardRepository.save(PapsStandard.create(version, bmiItem, SchoolLevel.MIDDLE, 2, Gender.MALE, 0, 99, 2, null, null, true, true));
+
+        PapsEvaluationResponse response = evaluatePapsService.evaluate(new PapsEvaluationRequest(
+                LocalDate.of(2012, 2, 24),
+                Gender.MALE,
+                SchoolLevel.MIDDLE,
+                2,
+                LocalDate.of(2026, 7, 18),
+                new BigDecimal("165.2"),
+                new BigDecimal("55.4"),
+                List.of(new PapsMeasurementRequest(FitnessTestItemCode.SHUTTLE_RUN, new BigDecimal("52")))
+        ));
+
+        assertThat(response.profile().schoolLevel()).isEqualTo("MIDDLE");
+        assertThat(response.profile().schoolGrade()).isEqualTo(2);
         assertThat(response.measurements().get(0).grade()).isEqualTo(3);
     }
 

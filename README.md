@@ -49,9 +49,9 @@ Only active components, active test items, and the single active standard versio
 
 - `POST /api/v1/paps/evaluations`
 
-The server validates profile and measurement inputs, calculates age from `assessmentDate`, calculates BMI from height and weight, and evaluates item-level grades from `PapsStandard` ranges. The request includes `schoolGrade` because official PAPS criteria are organized by school grade, not exact age. Requests and results are not stored in MariaDB.
+The server validates profile and measurement inputs, calculates age from `assessmentDate`, calculates BMI from height and weight, and evaluates item-level grades from `PapsStandard` ranges. The request includes `schoolLevel` and `schoolGrade` because official PAPS criteria are organized by school grade, not exact age. Requests and results are not stored in MariaDB.
 
-Current blocker: the repository contains `HACKATHON_V1` metadata and PAPS items, but no verified `paps_standard` range rows. The schema now supports school-grade-based criteria, but real evaluation requests cannot return grades from Seed Data until official criteria or team-approved internal criteria are added.
+Current blocker: the repository contains `HACKATHON_V1` metadata and PAPS items, but no verified `paps_standard` range rows. The schema now supports elementary, middle, and high school-grade-based criteria, but real evaluation requests cannot return grades from Seed Data until official criteria or team-approved internal criteria are added.
 
 ## AI Analysis APIs
 

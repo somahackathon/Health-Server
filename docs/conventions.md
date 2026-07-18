@@ -72,7 +72,8 @@ global/validation
 - `AiAnalysisJob` stores asynchronous AI job state and temporary request/result payloads until expiration.
 - PAPS evaluation requests and results are request-scoped only and are not persisted.
 - BMI is calculated by the server from height and weight and must not be accepted as a client measurement.
-- PAPS evaluation currently uses `HIGH` as the MVP school-level policy and requires RN to send `schoolGrade` for official grade-level criteria lookup.
+- PAPS evaluation requires RN to send `schoolLevel` and `schoolGrade` for official grade-level criteria lookup.
+- `schoolGrade` must be 1 to 6 for `ELEMENTARY` and 1 to 3 for `MIDDLE` or `HIGH`.
 - PAPS evaluation returns item-level grades and completeness; do not add an overall grade without an approved aggregation policy.
 
 ## Tests
