@@ -2,7 +2,7 @@ package team.soma.teto.health.ai.client;
 
 import java.nio.file.Path;
 import java.util.List;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import team.soma.teto.health.ai.dto.PostureAnalysisAiRequest;
 import team.soma.teto.health.ai.dto.PostureAnalysisAiResponse;
@@ -10,7 +10,7 @@ import team.soma.teto.health.ai.dto.PostureAnalysisAiResponse.Feedback;
 import team.soma.teto.health.analysis.job.domain.AnalysisStatus;
 
 @Component
-@ConditionalOnProperty(prefix = "app.ai", name = "mode", havingValue = "mock")
+@ConditionalOnExpression("'${app.ai.posture-mode:real}'.equalsIgnoreCase('mock')")
 public class MockPostureAiClient implements PostureAiClient {
 
     private static final String MOCK_MODEL_VERSION = "mock-posture-v1";
