@@ -1,0 +1,42 @@
+name: Bug report
+description: 재현 가능한 오류를 보고합니다.
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 문제 요약
+      description: 어떤 문제가 발생했는지 간단히 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 방법
+      description: 오류를 재현할 수 있는 요청, 입력값, 순서를 적어 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 영향 범위
+      description: RN 앱, Spring 서버, MariaDB, AI 서버 중 관련된 범위를 적어 주세요.
+  - type: textarea
+    id: logs
+    attributes:
+      label: 로그 또는 응답
+      description: 개인정보, raw 영상, 영상 경로, 비밀값은 제거하고 붙여 주세요.
+

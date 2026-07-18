@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project documentation
+    url: https://github.com/somahackathon/Health-Server
+    about: README와 docs 문서를 먼저 확인해 주세요.
