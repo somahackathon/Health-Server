@@ -49,6 +49,17 @@ Official PAPS standards and temporary self-defined standards must be clearly dis
 
 Actual PAPS grade ranges are TODO until official source data or a team-approved internal standard is available.
 
+## PAPS Reference Query API
+
+The RN app reads PAPS reference metadata before submitting any future evaluation request:
+
+- `GET /api/v1/paps/components` returns active fitness components.
+- `GET /api/v1/paps/test-items` returns active measurement items.
+- `GET /api/v1/paps/test-items?component={componentCode}` narrows measurement items to one component.
+- `GET /api/v1/paps/standards/current` returns the single active standard version.
+
+The standard version response includes `official`. `official=false` identifies an internal temporary standard; `official=true` identifies a version backed by an official PAPS source. The PAPS evaluation API is still pending and should be implemented separately after the standard data is confirmed.
+
 ## Fitness AI Analysis Flow
 
 ```mermaid

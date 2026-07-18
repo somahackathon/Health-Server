@@ -97,7 +97,7 @@ class DomainRepositoryTest {
 
         assertThat(item.getUnit()).isEqualTo(MeasurementUnit.COUNT);
         assertThat(cardioItems).extracting(FitnessTestItem::getCode)
-                .containsExactly(FitnessTestItemCode.SHUTTLE_RUN, FitnessTestItemCode.LONG_RUN_WALK, FitnessTestItemCode.STEP_TEST);
+                .containsExactly(FitnessTestItemCode.LONG_RUN_WALK, FitnessTestItemCode.SHUTTLE_RUN, FitnessTestItemCode.STEP_TEST);
         assertThat(fitnessTestItemRepository.findActiveItems()).hasSize(12);
         assertThat(fitnessTestItemRepository.existsByCode(FitnessTestItemCode.BMI)).isTrue();
     }
